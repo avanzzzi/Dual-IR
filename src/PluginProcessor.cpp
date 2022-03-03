@@ -28,25 +28,16 @@ DualIRAudioProcessor::DualIRAudioProcessor()
 #endif
 {
     setupDataDirectories();
-    installTones();
-    resetDirectory(userAppDataDirectory_tones);
-    // Sort jsonFiles alphabetically
-    std::sort(jsonFiles.begin(), jsonFiles.end());
-    if (jsonFiles.size() > 0) {
-        loadConfig(jsonFiles[current_model_index]);
-    }
 
     resetDirectoryIR(userAppDataDirectory_irs);
     // Sort iraFiles alphabetically
-    std::sort(iraFiles.begin(), iraFiles.end());
-    if (iraFiles.size() > 0) {
+    std::sort(irFiles.begin(), irFiles.end());
+    if (irFiles.size() > 0) {
         loadIRa(irFiles[current_ira_index]);
+        loadIRb(irFiles[current_irb_index]);
     }
-    // Sort irbFiles alphabetically
-    std::sort(irbFiles.begin(), irbFiles.end());
-    if (irbFiles.size() > 0) {
-        loadIRb(irbFiles[current_irb_index]);
-    }
+
+
 
     // initialize parameters:
     addParameter(gainParam = new AudioParameterFloat(GAIN_ID, GAIN_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
@@ -130,6 +121,7 @@ void DualIRAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock
     // initialisation that you need..
 
     // Set up IR
+    dsp::ProcessSpec spec{ sampleRate, static_cast<uint32> (samplesPerBlock), 2 };
     cabSimIRa.prepare(spec);
     cabSimIRb.prepare(spec);
 }
@@ -202,7 +194,8 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         }
 
         //    Master Volume 
-	buffer.applyGain(master); // Adding volume range (2x) mainly for clean models
+        // TODO FIX
+	    //buffer.applyGain(master); // Adding volume range (2x) mainly for clean models
     }
 
     // TODO change to make stereo if 2 irs loaded, or mono if only 1 ir is loaded
@@ -267,19 +260,6 @@ void DualIRAudioProcessor::resetDirectoryIR(const File& file)
     }
 }
 
-void DualIRAudioProcessor::addDirectory(const File& file)
-{
-    if (file.isDirectory())
-    {
-        juce::Array<juce::File> results;
-        file.findChildFiles(results, juce::File::findFiles, false, "*.json");
-        for (int i = results.size(); --i >= 0;)
-        {
-            jsonFiles.push_back(File(results.getReference(i).getFullPathName()));
-            num_models = num_models + 1.0;
-        }
-    }
-}
 
 void DualIRAudioProcessor::addDirectoryIR(const File& file)
 {

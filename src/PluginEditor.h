@@ -20,10 +20,7 @@
 */
 class DualIRAudioProcessorEditor  : public AudioProcessorEditor,
                                       private Button::Listener,
-                                      private Slider::Listener,
-                                      private Value::Listener,
-                                      private Label::Listener,
-                                      private Timer
+                                      private Slider::Listener
                                 
 {
 public:
@@ -68,17 +65,19 @@ private:
     File test_file;
 
     TextButton loadIR;
-    ToggleButton irButton;
+    ToggleButton iraButton;
+    ToggleButton irbButton;
 
     //juce::LookAndFeel_V4 blueLookAndFeel;
     //juce::LookAndFeel_V4 redLookAndFeel;
     
     juce::String fname;
     virtual void buttonClicked(Button* button) override;
-    void modelSelectChanged();
-    void loadButtonClicked();
+    //void modelSelectChanged();
+    //void loadButtonClicked();
     void updateToggleState(juce::Button* button, juce::String name);
-    void irSelectChanged();
+    void iraSelectChanged();
+    void irbSelectChanged();
     void loadIRClicked();
     //virtual void sliderValueChanged(Slider* slider) override;
 

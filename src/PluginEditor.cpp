@@ -63,7 +63,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
   
 
     addAndMakeVisible(ampGainKnob);
-    ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
     ampGainKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampGainKnob.setNumDecimalPlacesToDisplay(1);
     ampGainKnob.addListener(this);
@@ -76,7 +76,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
 
 
     addAndMakeVisible(ampMasterKnob);
-    ampMasterKnob.setLookAndFeel(&blueLookAndFeel);
+    //ampMasterKnob.setLookAndFeel(&blueLookAndFeel);
     ampMasterKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampMasterKnob.setNumDecimalPlacesToDisplay(1);
     ampMasterKnob.addListener(this);
@@ -121,11 +121,6 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     versionLabel.setFont(font);
 
 
-    // Name controls:
-    addAndMakeVisible(ampNameLabel);
-    ampNameField.setEditable(true, true, true);
-    addAndMakeVisible(ampNameField);
-
     // Size of plugin GUI
     setSize(400, 300);
 }
@@ -167,13 +162,9 @@ void DualIRAudioProcessorEditor::resized()
     LevelLabel.setBounds(93, 108, 80, 10);
  
 
-    toneDropDownLabel.setBounds(267, 16, 80, 10);
-    irDropDownLabel.setBounds(261, 48, 80, 10);
+    iraDropDownLabel.setBounds(267, 16, 80, 10);
+    irbDropDownLabel.setBounds(261, 48, 80, 10);
     versionLabel.setBounds(268, 431, 80, 10);
-
-    addAndMakeVisible(ampNameLabel);
-    ampNameField.setEditable(true, true, true);
-    addAndMakeVisible(ampNameField);
 
 }
 
@@ -181,7 +172,7 @@ void DualIRAudioProcessorEditor::iraSelectChanged()
 {
     const int selectedFileIndex = iraSelect.getSelectedItemIndex();
     if (selectedFileIndex >= 0 && selectedFileIndex < processor.irFiles.size()) {
-        File selectedFile = processor.userAppDataDirectory_ir.getFullPathName() + "/" + iraSelect.getText() + ".wav";
+        File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + iraSelect.getText() + ".wav";
         //processor.loadConfig(processor.irFiles[selectedFileIndex]);
         processor.loadIRa(selectedFile);
         processor.current_ira_index = selectedFileIndex;
@@ -253,7 +244,7 @@ void DualIRAudioProcessorEditor::loadIRClicked()
 
 void DualIRAudioProcessorEditor::buttonClicked(juce::Button* button)
 {
-    if (button == &loadButton) {
+    if (button == &loadIR) {
         loadIRClicked();
     }
 }

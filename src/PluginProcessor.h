@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include <nlohmann/json.hpp>
 #include "CabSim.h"
 
 #pragma once

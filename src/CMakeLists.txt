@@ -1,6 +1,6 @@
 #add_subdirectory(headless)
 
-target_sources(NeuralPi PRIVATE
+target_sources(Dual-IR PRIVATE
         CabSim.h
 	PluginEditor.cpp
 	PluginEditor.h
@@ -8,4 +8,4 @@ target_sources(NeuralPi PRIVATE
 	PluginProcessor.h
 )
 
-#target_precompile_headers(NeuralPi PRIVATE pch.h)
+#target_precompile_headers(Dual-IR PRIVATE pch.h)
