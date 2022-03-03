@@ -172,6 +172,8 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     // Amp =============================================================================
     if (amp_state == 1) {
 
+        buffer.applyGain(driveValue);
+
         // Process IR-A
         if (ira_state == true && num_irs > 0) {
         
@@ -191,7 +193,7 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         }
 
         //    Master Volume 
-	    //buffer.applyGain(master); // Adding volume range (2x) mainly for clean models
+	    buffer.applyGain(masterValue); // Adding volume range (2x) mainly for clean models
     }
 
     // TODO change to make stereo if 2 irs loaded, or mono if only 1 ir is loaded
@@ -310,6 +312,17 @@ void DualIRAudioProcessor::setupDataDirectories()
 
     // Add the tones directory and update IR list
     addDirectoryIR(userAppDataDirectory_irs);
+}
+
+void DualIRAudioProcessor::setDrive(float paramDrive)
+{
+    driveValue = paramDrive;
+}
+
+
+void DualIRAudioProcessor::setMaster(float db_ampMaster)
+{
+    masterValue = db_ampMaster;
 }
 
 /*

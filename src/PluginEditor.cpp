@@ -254,7 +254,10 @@ void DualIRAudioProcessorEditor::buttonClicked(juce::Button* button)
 
 void DualIRAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
-    int dummyvar = 1;
+    if (slider == &ampGainKnob)
+        processor.setDrive(slider->getValue());
+    else if (slider == &ampMasterKnob)
+        processor.setMaster(slider->getValue());
     /*
     if (slider == &modelKnob) {
         if (slider->getValue() >= 0 && slider->getValue() < processor.jsonFiles.size()) {

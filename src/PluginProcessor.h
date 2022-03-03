@@ -99,6 +99,11 @@ public:
     int current_ira_index = 0;
     int current_irb_index = 0;
 
+    void setDrive(float paramDrive);
+    void setMaster(float db_ampMaster);
+    float driveValue = 0.5;
+    float masterValue = 0.5;
+
 private:
     var dummyVar;
 
