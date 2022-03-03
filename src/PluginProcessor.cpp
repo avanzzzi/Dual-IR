@@ -172,9 +172,6 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     // Amp =============================================================================
     if (amp_state == 1) {
 
-        auto block = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(0);
-        auto context = juce::dsp::ProcessContextReplacing<float>(block);
-
         // Process IR-A
         if (ira_state == true && num_irs > 0) {
         
@@ -194,7 +191,6 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         }
 
         //    Master Volume 
-        // TODO FIX
 	    //buffer.applyGain(master); // Adding volume range (2x) mainly for clean models
     }
 
@@ -214,7 +210,20 @@ AudioProcessorEditor* DualIRAudioProcessor::createEditor()
     return new DualIRAudioProcessorEditor (*this);
 }
 
+void DualIRAudioProcessor::getStateInformation(MemoryBlock& destData)
+{
+    // You should use this method to store your parameters in the memory block.
+    // You could do that either as raw data, or use the XML or ValueTree classes
+    // as intermediaries to make it easy to save and load complex data.
 
+}
+
+void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+{
+    // You should use this method to restore your parameters from this memory block,
+    // whose contents will have been created by the getStateInformation() call.
+
+}
 
 void DualIRAudioProcessor::loadIRa(File irFile)
 {

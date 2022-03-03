@@ -122,7 +122,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
 
 
     // Size of plugin GUI
-    setSize(400, 300);
+    setSize(380, 230);
 }
 
 DualIRAudioProcessorEditor::~DualIRAudioProcessorEditor()
@@ -150,9 +150,9 @@ void DualIRAudioProcessorEditor::resized()
     iraSelect.setBounds(11, 10, 270, 25);
    
     irbSelect.setBounds(11, 42, 270, 25);
-    loadIR.setBounds(120, 74, 100, 25);
-    iraButton.setBounds(248, 42, 257, 25);
-    irbButton.setBounds(248, 10, 257, 25);
+    loadIR.setBounds(11, 74, 100, 25);
+    iraButton.setBounds(335, 42, 30, 30);
+    irbButton.setBounds(335, 10, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -162,9 +162,9 @@ void DualIRAudioProcessorEditor::resized()
     LevelLabel.setBounds(93, 108, 80, 10);
  
 
-    iraDropDownLabel.setBounds(267, 16, 80, 10);
-    irbDropDownLabel.setBounds(261, 48, 80, 10);
-    versionLabel.setBounds(268, 431, 80, 10);
+    iraDropDownLabel.setBounds(280, 16, 40, 10);
+    irbDropDownLabel.setBounds(280, 48, 40, 10);
+    versionLabel.setBounds(280, 210, 80, 10);
 
 }
 
@@ -205,6 +205,7 @@ void DualIRAudioProcessorEditor::loadIRClicked()
     FileChooser chooser("Select one or more .wav IR files to import",
         {},
         "*.wav");
+    
     if (chooser.browseForMultipleFilesToOpen())
     {
         int import_fail = 1;
@@ -239,6 +240,7 @@ void DualIRAudioProcessorEditor::loadIRClicked()
             }
         }
     }
+    
 }
 
 
@@ -249,9 +251,11 @@ void DualIRAudioProcessorEditor::buttonClicked(juce::Button* button)
     }
 }
 
-/*
+
 void DualIRAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
+    int dummyvar = 1;
+    /*
     if (slider == &modelKnob) {
         if (slider->getValue() >= 0 && slider->getValue() < processor.jsonFiles.size()) {
             modelSelect.setSelectedItemIndex(processor.getModelIndex(slider->getValue()), juce::NotificationType::dontSendNotification);
@@ -261,6 +265,7 @@ void DualIRAudioProcessorEditor::sliderValueChanged(Slider* slider)
             irSelect.setSelectedItemIndex(processor.getIrIndex(slider->getValue()), juce::NotificationType::dontSendNotification);
         }
     }
+    */
 }
-*/
+
 

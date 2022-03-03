@@ -79,7 +79,7 @@ private:
     void iraSelectChanged();
     void irbSelectChanged();
     void loadIRClicked();
-    //virtual void sliderValueChanged(Slider* slider) override;
+    virtual void sliderValueChanged(Slider* slider) override;
 
     Label gainLabel{ {}, "Gain" };
     Label masterLabel{ {}, "Master" };
