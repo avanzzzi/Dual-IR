@@ -151,8 +151,8 @@ void DualIRAudioProcessorEditor::resized()
    
     irbSelect.setBounds(11, 42, 270, 25);
     loadIR.setBounds(11, 74, 100, 25);
-    iraButton.setBounds(335, 42, 30, 30);
-    irbButton.setBounds(335, 10, 30, 30);
+    iraButton.setBounds(335, 10, 30, 30);
+    irbButton.setBounds(335, 42, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -194,9 +194,21 @@ void DualIRAudioProcessorEditor::irbSelectChanged()
 void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::String name)
 {
     if (name == "IRA")
-        processor.ira_state = button->getToggleState();
+        //processor.ira_state = button->getToggleState();
+        if (processor.ira_state == true) {
+            processor.ira_state = false;
+        } else {
+            processor.ira_state = true;
+        }
+
     else
-        processor.irb_state = button->getToggleState();
+        //processor.irb_state = button->getToggleState();
+        if (processor.irb_state == true) {
+            processor.irb_state = false;
+        }
+        else {
+            processor.irb_state = true;
+        }
 }
 
 

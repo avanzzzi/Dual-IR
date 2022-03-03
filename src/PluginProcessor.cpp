@@ -172,7 +172,7 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     // Amp =============================================================================
     if (amp_state == 1) {
 
-        buffer.applyGain(driveValue);
+        buffer.applyGain(driveValue * 2.0);
 
         // Process IR-A
         if (ira_state == true && num_irs > 0) {
@@ -180,7 +180,7 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
             cabSimIRa.process(context);
 
             // IR generally makes output quieter, add volume here to make ir on/off volume more even
-            buffer.applyGain(2.0);
+            buffer.applyGain(3.0);
         }
 
         // Process IR-B
@@ -189,11 +189,11 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
             cabSimIRb.process(context);
 
             // IR generally makes output quieter, add volume here to make ir on/off volume more even
-            buffer.applyGain(2.0);
+            buffer.applyGain(3.0);
         }
 
         //    Master Volume 
-	    buffer.applyGain(masterValue); // Adding volume range (2x) mainly for clean models
+	    buffer.applyGain(masterValue * 2.0); // Adding volume range (2x) mainly for clean models
     }
 
     // TODO change to make stereo if 2 irs loaded, or mono if only 1 ir is loaded
