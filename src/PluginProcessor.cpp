@@ -169,6 +169,9 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     auto block = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(0);
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
+    auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
+    auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
+
     // Amp =============================================================================
     if (amp_state == 1) {
 
@@ -177,24 +180,30 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         // Process IR-A
         if (ira_state == true && num_irs > 0) {
         
-            cabSimIRa.process(context);
+            cabSimIRa.process(context); // Process IR on channel 0
 
             // IR generally makes output quieter, add volume here to make ir on/off volume more even
-            buffer.applyGain(3.0);
+            buffer.applyGain(2.0);
         }
 
         // Process IR-B
-        if (irb_state == true && num_irs > 0) {
-       
-            cabSimIRb.process(context);
+        if (irb_state == true && ira_state == true && num_irs > 0) {
+
+            cabSimIRb.process(context2); // Process IR on channel 1
+            block.add(block2); // If both IRs are on, add the output of channel 1 to channel 0
 
             // IR generally makes output quieter, add volume here to make ir on/off volume more even
-            buffer.applyGain(3.0);
+            buffer.applyGain(0.5); // Half the gain to account for adding two signals together
+
+        } else if (irb_state == true && ira_state == false && num_irs > 0) {
+            cabSimIRb.process(context);
+            buffer.applyGain(2.0);
         }
 
         //    Master Volume 
 	    buffer.applyGain(masterValue * 2.0); // Adding volume range (2x) mainly for clean models
     }
+
 
     // TODO change to make stereo if 2 irs loaded, or mono if only 1 ir is loaded
     for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
