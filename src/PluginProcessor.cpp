@@ -44,7 +44,7 @@ DualIRAudioProcessor::DualIRAudioProcessor()
     addParameter(masterParam = new AudioParameterFloat(MASTER_ID, MASTER_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
     //addParameter(bassParam = new AudioParameterFloat(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
     //addParameter(midParam = new AudioParameterFloat(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    //addParameter(trebleParam = new AudioParameterFloat(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
+    addParameter(balanceParam = new AudioParameterFloat(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
 }
 
 
@@ -178,7 +178,7 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         buffer.applyGain(driveValue * 2.0);
 
         // Process IR-A
-        if (ira_state == true && num_irs > 0) {
+        if (ira_state == true && irb_state == false && num_irs > 0) {
         
             cabSimIRa.process(context); // Process IR on channel 0
 
@@ -189,23 +189,36 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         // Process IR-B
         if (irb_state == true && ira_state == true && num_irs > 0) {
 
+            // Process IR-A and IR-B on Channel 0, Channel 1 respectively
+            cabSimIRa.process(context); // Process IR on channel 0
             cabSimIRb.process(context2); // Process IR on channel 1
-            block.add(block2); // If both IRs are on, add the output of channel 1 to channel 0
 
-            // IR generally makes output quieter, add volume here to make ir on/off volume more even
-            buffer.applyGain(0.5); // Half the gain to account for adding two signals together
 
-        } else if (irb_state == true && ira_state == false && num_irs > 0) {
+            // Apply Balance Parameter //
+            // This applies a balance to the mono output from both IR's.
+            // For example, if Balance = 0.3 (from a range 0.0 to 1.0),
+            //   then IR-A will share 30% of the mono output and 
+            //   IR-B will share 70% of the mono output. 
+
+            // Apply the appropriate Balance to each channel
+            block.multiplyBy(1.0 - balanceValue); // TODO Verify that multiplyBy function acts like a Gain
+            block2.multiplyBy(balanceValue);
+
+            // Add channel 1 to channel 0 (channel 0 will be copied to channel 1 later on)
+            block.add(block2);
+
+
+        } else if (ira_state == false && irb_state == true && num_irs > 0) {
             cabSimIRb.process(context);
             buffer.applyGain(2.0);
         }
 
         //    Master Volume 
-	    buffer.applyGain(masterValue * 2.0); // Adding volume range (2x) mainly for clean models
+	buffer.applyGain(masterValue * 2.0);
     }
 
 
-    // TODO change to make stereo if 2 irs loaded, or mono if only 1 ir is loaded
+    // Copy Channel 0 to Channel 1 for Mono Output
     for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
         buffer.copyFrom(ch, 0, buffer, 0, 0, buffer.getNumSamples());
 }
@@ -333,6 +346,12 @@ void DualIRAudioProcessor::setMaster(float db_ampMaster)
 {
     masterValue = db_ampMaster;
 }
+
+void DualIRAudioProcessor::setBalance(float paramBalance)
+{
+    balanceValue = paramBalance;
+}
+
 
 /*
 float DualIRAudioProcessor::convertLogScale(float in_value, float x_min, float x_max, float y_min, float y_max)

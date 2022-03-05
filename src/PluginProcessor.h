@@ -22,8 +22,8 @@
 //#define PANA_NAME "Pan-A"
 //#define PANB_ID "panb"
 //#define PANB_NAME "Pan-B"
-//#define BALANCE_ID "balance"
-//#define BALANCE_NAME "Balance"
+#define BALANCE_ID "balance"
+#define BALANCE_NAME "Balance"
 
 //==============================================================================
 /**
@@ -101,8 +101,10 @@ public:
 
     void setDrive(float paramDrive);
     void setMaster(float db_ampMaster);
+    void setBalance(float paramBalance);
     float driveValue = 0.5;
     float masterValue = 0.5;
+    float balanceValue = 0.5;
 
 private:
     var dummyVar;
@@ -111,7 +113,7 @@ private:
     AudioParameterFloat* masterParam;
     //AudioParameterFloat* panaParam;
     //AudioParameterFloat* panbParam;
-    //AudioParameterFloat* balanceParam;
+    AudioParameterFloat* balanceParam;
     //AudioParameterFloat* modelParam;
     //AudioParameterFloat* irParam;
 

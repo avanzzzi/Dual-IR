@@ -56,7 +56,9 @@ private:
     Label LevelLabel;
     //Label PanALabel;
     //Label PanBLabel;
-    //Label BalanceLabel;
+    Label BalanceLabel;
+    Label BalanceLabelA;
+    Label BalanceLabelB;
 
     Label iraDropDownLabel;
     Label irbDropDownLabel;

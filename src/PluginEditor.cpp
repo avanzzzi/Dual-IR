@@ -89,6 +89,18 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     //ampMasterKnob.setNumDecimalPlacesToDisplay(1);
     ampMasterKnob.setDoubleClickReturnValue(true, 0.5);
 
+    addAndMakeVisible(ampBalanceKnob);
+    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampBalanceKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
+    ampBalanceKnob.setNumDecimalPlacesToDisplay(1);
+    ampBalanceKnob.addListener(this);
+    ampBalanceKnob.setRange(0.0, 1.0);
+    ampBalanceKnob.setValue(0.5);
+    ampBalanceKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    ampBalanceKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
+    ampBalanceKnob.setNumDecimalPlacesToDisplay(2);
+    ampBalanceKnob.setDoubleClickReturnValue(true, 0.5);
+
 
     addAndMakeVisible(GainLabel);
     GainLabel.setText("Gain", juce::NotificationType::dontSendNotification);
@@ -96,6 +108,16 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     addAndMakeVisible(LevelLabel);
     LevelLabel.setText("Level", juce::NotificationType::dontSendNotification);
     LevelLabel.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(BalanceLabel);
+    BalanceLabel.setText("Balance", juce::NotificationType::dontSendNotification);
+    BalanceLabel.setJustificationType(juce::Justification::centred);
+
+    addAndMakeVisible(BalanceLabelA);
+    BalanceLabelA.setText("A", juce::NotificationType::dontSendNotification);
+    BalanceLabelA.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(BalanceLabelB);
+    BalanceLabelB.setText("B", juce::NotificationType::dontSendNotification);
+    BalanceLabelB.setJustificationType(juce::Justification::centred);
 
 
     addAndMakeVisible(iraDropDownLabel);
@@ -115,6 +137,9 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     font.setHeight(height); // 0.75);
     GainLabel.setFont(font);
     LevelLabel.setFont(font);
+    BalanceLabel.setFont(font);
+    BalanceLabelA.setFont(font);
+    BalanceLabelB.setFont(font);
 
     iraDropDownLabel.setFont(font);
     irbDropDownLabel.setFont(font);
@@ -157,9 +182,13 @@ void DualIRAudioProcessorEditor::resized()
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
     ampMasterKnob.setBounds(95, 120, 75, 95);
+    ampBalanceKnob.setBounds(180, 120, 75, 95);
    
     GainLabel.setBounds(6, 108, 80, 10);
     LevelLabel.setBounds(93, 108, 80, 10);
+    BalanceLabel.setBounds(180, 108, 80, 10);
+    BalanceLabelA.setBounds(177, 171, 20, 20);
+    BalanceLabelB.setBounds(238, 171, 20, 20);
  
 
     iraDropDownLabel.setBounds(280, 16, 40, 10);
@@ -270,6 +299,8 @@ void DualIRAudioProcessorEditor::sliderValueChanged(Slider* slider)
         processor.setDrive(slider->getValue());
     else if (slider == &ampMasterKnob)
         processor.setMaster(slider->getValue());
+    else if (slider == &ampBalanceKnob)
+        processor.setBalance(slider->getValue());
     /*
     if (slider == &modelKnob) {
         if (slider->getValue() >= 0 && slider->getValue() < processor.jsonFiles.size()) {
