@@ -176,8 +176,8 @@ void DualIRAudioProcessorEditor::resized()
    
     irbSelect.setBounds(11, 42, 270, 25);
     loadIR.setBounds(11, 74, 100, 25);
-    iraButton.setBounds(335, 10, 30, 30);
-    irbButton.setBounds(335, 42, 30, 30);
+    iraButton.setBounds(335, 8, 30, 30);
+    irbButton.setBounds(335, 40, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -187,7 +187,7 @@ void DualIRAudioProcessorEditor::resized()
     GainLabel.setBounds(6, 108, 80, 10);
     LevelLabel.setBounds(93, 108, 80, 10);
     BalanceLabel.setBounds(180, 108, 80, 10);
-    BalanceLabelA.setBounds(177, 171, 20, 20);
+    BalanceLabelA.setBounds(178, 170, 20, 20);
     BalanceLabelB.setBounds(238, 171, 20, 20);
  
 
