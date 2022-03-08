@@ -308,10 +308,16 @@ void DualIRAudioProcessorEditor::loadIRClicked()
     //FileChooser chooser("Select one or more .wav IR files to import",
     //    {},
     //    "*.wav");
-    
-    if (chooser.browseForMultipleFilesToOpen())
+    myChooser = std::make_unique<FileChooser> ("Select one or more .wav IR files to import",
+                                               File::getSpecialLocation (File::userDesktopDirectory),
+                                               "*.wav");
+ 
+    auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles | FileBrowserComponent::canSelectMultipleItems;
+ 
+    myChooser->launchAsync (folderChooserFlags, [this] (const FileChooser& chooser)                  
+    //if (chooser.browseForMultipleFilesToOpen())
     {
-        int import_fail = 1;
+        //int import_fail = 1;
         Array<File> files = chooser.getResults();
         for (auto file : files) {
             File fullpath = processor.userAppDataDirectory_irs.getFullPathName() + "/" + file.getFileName();
