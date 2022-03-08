@@ -305,9 +305,9 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
 
 void DualIRAudioProcessorEditor::loadIRClicked()
 {
-    FileChooser chooser("Select one or more .wav IR files to import",
-        {},
-        "*.wav");
+    //FileChooser chooser("Select one or more .wav IR files to import",
+    //    {},
+    //    "*.wav");
     
     if (chooser.browseForMultipleFilesToOpen())
     {
