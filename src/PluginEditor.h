@@ -30,7 +30,7 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
-    std::unique_ptr<FileChooser> chooser;
+    std::unique_ptr<FileChooser> myChooser;
     
 
 private:
