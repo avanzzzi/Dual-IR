@@ -314,7 +314,7 @@ void DualIRAudioProcessorEditor::loadIRClicked()
  
     auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectFiles | FileBrowserComponent::canSelectMultipleItems;
  
-    myChooser->launchAsync (folderChooserFlags, [this] (const FileChooser& chooser))                 
+    myChooser->launchAsync (folderChooserFlags, [this] (const FileChooser& chooser)                
     //if (chooser.browseForMultipleFilesToOpen())
     {
         //int import_fail = 1;
@@ -348,7 +348,7 @@ void DualIRAudioProcessorEditor::loadIRClicked()
                 //std::sort(processor.irFiles.begin(), processor.irFiles.end());
             }
         }
-    }
+    });
     
 }
 
