@@ -31,6 +31,7 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
+    std::unique_ptr<FileChooser> chooser("Select one or more .wav IR files to import", {}, "*.wav");
 
 private:
     // This reference is provided as a quick way for your editor to
