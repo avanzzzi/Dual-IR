@@ -30,7 +30,8 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
-
+    std::unique_ptr<FileChooser> myChooser;
+    
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -54,12 +55,15 @@ private:
 
     Label GainLabel;
     Label LevelLabel;
-    //Label PanALabel;
-    //Label PanBLabel;
-    //Label BalanceLabel;
+    Label PanALabel;
+    Label PanBLabel;
+    Label BalanceLabel;
+    Label BalanceLabelA;
+    Label BalanceLabelB;
 
     Label iraDropDownLabel;
     Label irbDropDownLabel;
+    Label stereoLabel;
     Label versionLabel;
 
     File test_file;
@@ -67,9 +71,8 @@ private:
     TextButton loadIR;
     ToggleButton iraButton;
     ToggleButton irbButton;
+    ToggleButton stereoButton;
 
-    //juce::LookAndFeel_V4 blueLookAndFeel;
-    //juce::LookAndFeel_V4 redLookAndFeel;
     
     juce::String fname;
     virtual void buttonClicked(Button* button) override;
@@ -80,11 +83,6 @@ private:
     void irbSelectChanged();
     void loadIRClicked();
     virtual void sliderValueChanged(Slider* slider) override;
-
-    Label gainLabel{ {}, "Gain" };
-    Label masterLabel{ {}, "Master" };
-
-    Label modelLabel{ {}, "Model" };
 
 
     AudioProcessorParameter* getParameter(const String& paramId);

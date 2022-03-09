@@ -18,12 +18,12 @@
 #define GAIN_NAME "Gain"
 #define MASTER_ID "master"
 #define MASTER_NAME "Master"
-//#define PANA_ID "pana"
-//#define PANA_NAME "Pan-A"
-//#define PANB_ID "panb"
-//#define PANB_NAME "Pan-B"
-//#define BALANCE_ID "balance"
-//#define BALANCE_NAME "Balance"
+#define PANA_ID "pana"
+#define PANA_NAME "Pan-A"
+#define PANB_ID "panb"
+#define PANB_NAME "Pan-B"
+#define BALANCE_ID "balance"
+#define BALANCE_NAME "Balance"
 
 //==============================================================================
 /**
@@ -101,17 +101,27 @@ public:
 
     void setDrive(float paramDrive);
     void setMaster(float db_ampMaster);
+    void setBalance(float paramBalance);
+    void setPanA(float paramPanA);
+    void setPanB(float paramPanB);
+
     float driveValue = 0.5;
     float masterValue = 0.5;
+    float balanceValue = 0.5;
+
+    // Stereo and Pan params
+    bool isStereo = false;
+    float panAValue= 0.0;
+    float panBValue = 1.0;
 
 private:
     var dummyVar;
 
     AudioParameterFloat* gainParam;
     AudioParameterFloat* masterParam;
-    //AudioParameterFloat* panaParam;
-    //AudioParameterFloat* panbParam;
-    //AudioParameterFloat* balanceParam;
+    AudioParameterFloat* panaParam;
+    AudioParameterFloat* panbParam;
+    AudioParameterFloat* balanceParam;
     //AudioParameterFloat* modelParam;
     //AudioParameterFloat* irParam;
 
