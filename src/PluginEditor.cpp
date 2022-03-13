@@ -297,7 +297,7 @@ void DualIRAudioProcessorEditor::loadIRClicked()
                                                File::getSpecialLocation (File::userDesktopDirectory),
                                                "*.wav");
  
-    auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectDirectories;
+    auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectDirectories | FileBrowserComponent::canSelectFiles;
  
     myChooser->launchAsync (folderChooserFlags, [this] (const FileChooser& chooser)                
     {
