@@ -18,10 +18,10 @@
 #define GAIN_NAME "Gain"
 #define MASTER_ID "master"
 #define MASTER_NAME "Master"
-//#define PANA_ID "pana"
-//#define PANA_NAME "Pan-A"
-//#define PANB_ID "panb"
-//#define PANB_NAME "Pan-B"
+#define PANA_ID "pana"
+#define PANA_NAME "Pan-A"
+#define PANB_ID "panb"
+#define PANB_NAME "Pan-B"
 #define BALANCE_ID "balance"
 #define BALANCE_NAME "Balance"
 
@@ -70,18 +70,15 @@ public:
 
     void loadIRa(File irFile);
     void loadIRb(File irFile);
-    void setupDataDirectories();
-    
-    //float convertLogScale(float in_value, float x_min, float x_max, float y_min, float y_max);
+    //void setupDataDirectories();
 
-    //float decibelToLinear(float dbValue);
-
-    void addDirectoryIR(const File& file);
-    void resetDirectoryIR(const File& file);
+    //void addDirectoryIR(const File& file);
+    //void resetDirectoryIR(const File& file);
     std::vector<File> irFiles;
-    File currentDirectory = File::getCurrentWorkingDirectory().getFullPathName();
-    File userAppDataDirectory = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(JucePlugin_Manufacturer).getChildFile(JucePlugin_Name);
-    File userAppDataDirectory_irs = userAppDataDirectory.getFullPathName() + "/irs";
+    //File currentDirectory = File::getCurrentWorkingDirectory().getFullPathName();
+    //File userAppDataDirectory = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(JucePlugin_Manufacturer).getChildFile(JucePlugin_Name);
+    //File userAppDataDirectory_irs = userAppDataDirectory.getFullPathName() + "/irs";
+    File userAppDataDirectory_irs = File::getSpecialLocation(File::userDesktopDirectory);
 
     // Pedal/amp states
     int amp_state = 1; // 0 = off, 1 = on
@@ -102,20 +99,31 @@ public:
     void setDrive(float paramDrive);
     void setMaster(float db_ampMaster);
     void setBalance(float paramBalance);
+    void setPanA(float paramPanA);
+    void setPanB(float paramPanB);
+
     float driveValue = 0.5;
     float masterValue = 0.5;
     float balanceValue = 0.5;
+
+    float previousDriveValue = 0.5;
+    float previousMasterValue = 0.5;
+
+    // Stereo and Pan params
+    bool isStereo = false;
+    float panAValue= 0.0;
+    float panBValue = 1.0;
+
+    AudioProcessorValueTreeState treeState;
 
 private:
     var dummyVar;
 
     AudioParameterFloat* gainParam;
     AudioParameterFloat* masterParam;
-    //AudioParameterFloat* panaParam;
-    //AudioParameterFloat* panbParam;
+    AudioParameterFloat* panaParam;
+    AudioParameterFloat* panbParam;
     AudioParameterFloat* balanceParam;
-    //AudioParameterFloat* modelParam;
-    //AudioParameterFloat* irParam;
 
     // IR processing
     CabSim cabSimIRa;

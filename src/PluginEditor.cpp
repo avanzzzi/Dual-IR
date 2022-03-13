@@ -22,7 +22,6 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to
 
-    
     addAndMakeVisible(iraSelect);
     iraSelect.setColour(juce::Label::textColourId, juce::Colours::black);
     int c = 1;
@@ -33,7 +32,6 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     iraSelect.onChange = [this] {iraSelectChanged(); };
     iraSelect.setSelectedItemIndex(processor.current_ira_index, juce::NotificationType::dontSendNotification);
     iraSelect.setScrollWheelEnabled(true);
-
 
     addAndMakeVisible(irbSelect);
     irbSelect.setColour(juce::Label::textColourId, juce::Colours::black);
@@ -51,17 +49,21 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     loadIR.setColour(juce::Label::textColourId, juce::Colours::black);
     loadIR.addListener(this);
 
-    // Toggle IR
+    // Toggle IR-A
     addAndMakeVisible(iraButton); // Toggle is for testing purposes
     iraButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     iraButton.onClick = [this] { updateToggleState(&iraButton, "IRA");   };
 
-    // Toggle LSTM
+    // Toggle IR-B
     addAndMakeVisible(irbButton); // Toggle is for testing purposes
     irbButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     irbButton.onClick = [this] { updateToggleState(&irbButton, "IRB");   };
-  
 
+    // Toggle Stereo
+    addAndMakeVisible(stereoButton); // Toggle is for testing purposes
+    stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    stereoButton.onClick = [this] { updateToggleState(&stereoButton, "Stereo");   };
+  
     addAndMakeVisible(ampGainKnob);
     //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
     ampGainKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -73,7 +75,6 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampGainKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampGainKnob.setNumDecimalPlacesToDisplay(2);
     ampGainKnob.setDoubleClickReturnValue(true, 0.5);
-
 
     addAndMakeVisible(ampMasterKnob);
     //ampMasterKnob.setLookAndFeel(&blueLookAndFeel);
@@ -88,6 +89,30 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     //ampMasterKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 50, 20 );
     //ampMasterKnob.setNumDecimalPlacesToDisplay(1);
     ampMasterKnob.setDoubleClickReturnValue(true, 0.5);
+
+    addAndMakeVisible(ampPanAKnob);
+    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampPanAKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
+    ampPanAKnob.setNumDecimalPlacesToDisplay(1);
+    ampPanAKnob.addListener(this);
+    ampPanAKnob.setRange(0.0, 1.0);
+    ampPanAKnob.setValue(0.0);
+    ampPanAKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    ampPanAKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
+    ampPanAKnob.setNumDecimalPlacesToDisplay(2);
+    ampPanAKnob.setDoubleClickReturnValue(true, 0.0);
+
+    addAndMakeVisible(ampPanBKnob);
+    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampPanBKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
+    ampPanBKnob.setNumDecimalPlacesToDisplay(1);
+    ampPanBKnob.addListener(this);
+    ampPanBKnob.setRange(0.0, 1.0);
+    ampPanBKnob.setValue(1.0);
+    ampPanBKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+    ampPanBKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
+    ampPanBKnob.setNumDecimalPlacesToDisplay(2);
+    ampPanBKnob.setDoubleClickReturnValue(true, 1.0);
 
     addAndMakeVisible(ampBalanceKnob);
     //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
@@ -105,19 +130,27 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     addAndMakeVisible(GainLabel);
     GainLabel.setText("Gain", juce::NotificationType::dontSendNotification);
     GainLabel.setJustificationType(juce::Justification::centred);
+
     addAndMakeVisible(LevelLabel);
     LevelLabel.setText("Level", juce::NotificationType::dontSendNotification);
     LevelLabel.setJustificationType(juce::Justification::centred);
+
     addAndMakeVisible(BalanceLabel);
     BalanceLabel.setText("Balance", juce::NotificationType::dontSendNotification);
     BalanceLabel.setJustificationType(juce::Justification::centred);
 
+    addAndMakeVisible(PanALabel);
+    PanALabel.setText("Pan-A", juce::NotificationType::dontSendNotification);
+    PanALabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(BalanceLabelA);
     BalanceLabelA.setText("A", juce::NotificationType::dontSendNotification);
     BalanceLabelA.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(BalanceLabelB);
     BalanceLabelB.setText("B", juce::NotificationType::dontSendNotification);
     BalanceLabelB.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(PanBLabel);
+    PanBLabel.setText("Pan-B", juce::NotificationType::dontSendNotification);
+    PanBLabel.setJustificationType(juce::Justification::centred);
 
 
     addAndMakeVisible(iraDropDownLabel);
@@ -128,6 +161,10 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbDropDownLabel.setText("IR-B", juce::NotificationType::dontSendNotification);
     irbDropDownLabel.setJustificationType(juce::Justification::centred);
 
+    addAndMakeVisible(stereoLabel);
+    stereoLabel.setText("Stereo", juce::NotificationType::dontSendNotification);
+    stereoLabel.setJustificationType(juce::Justification::centred);
+
     addAndMakeVisible(versionLabel);
     versionLabel.setText("v1.0.0", juce::NotificationType::dontSendNotification);
     versionLabel.setJustificationType(juce::Justification::centred);
@@ -137,17 +174,20 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     font.setHeight(height); // 0.75);
     GainLabel.setFont(font);
     LevelLabel.setFont(font);
+
     BalanceLabel.setFont(font);
+    PanALabel.setFont(font);
+    PanBLabel.setFont(font);
     BalanceLabelA.setFont(font);
     BalanceLabelB.setFont(font);
+    stereoLabel.setFont(font);
 
     iraDropDownLabel.setFont(font);
     irbDropDownLabel.setFont(font);
     versionLabel.setFont(font);
 
-
     // Size of plugin GUI
-    setSize(380, 230);
+    setSize(420, 230);
 }
 
 DualIRAudioProcessorEditor::~DualIRAudioProcessorEditor()
@@ -173,28 +213,31 @@ void DualIRAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     iraSelect.setBounds(11, 10, 270, 25);
-   
     irbSelect.setBounds(11, 42, 270, 25);
     loadIR.setBounds(11, 74, 100, 25);
     iraButton.setBounds(335, 8, 30, 30);
     irbButton.setBounds(335, 40, 30, 30);
+    stereoButton.setBounds(335, 71, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
     ampMasterKnob.setBounds(95, 120, 75, 95);
     ampBalanceKnob.setBounds(180, 120, 75, 95);
+    ampPanAKnob.setBounds(265, 120, 75, 95);
+    ampPanBKnob.setBounds(350, 120, 75, 95);
    
     GainLabel.setBounds(6, 108, 80, 10);
     LevelLabel.setBounds(93, 108, 80, 10);
     BalanceLabel.setBounds(180, 108, 80, 10);
+    PanALabel.setBounds(265, 108, 80, 10);
+    PanBLabel.setBounds(350, 108, 80, 10);
     BalanceLabelA.setBounds(178, 170, 20, 20);
     BalanceLabelB.setBounds(238, 171, 20, 20);
- 
 
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
+    stereoLabel.setBounds(280, 80, 60, 10);
     versionLabel.setBounds(280, 210, 80, 10);
-
 }
 
 void DualIRAudioProcessorEditor::iraSelectChanged()
@@ -206,7 +249,6 @@ void DualIRAudioProcessorEditor::iraSelectChanged()
         processor.loadIRa(selectedFile);
         processor.current_ira_index = selectedFileIndex;
     }
-   
 }
 
 void DualIRAudioProcessorEditor::irbSelectChanged()
@@ -230,7 +272,7 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
             processor.ira_state = true;
         }
 
-    else
+    else if (name == "IRB")
         //processor.irb_state = button->getToggleState();
         if (processor.irb_state == true) {
             processor.irb_state = false;
@@ -238,49 +280,70 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
         else {
             processor.irb_state = true;
         }
+    else if (name == "Stereo")
+        if (processor.isStereo == true) {
+            processor.isStereo = false;
+
+        }
+        else {
+            processor.isStereo = true;
+        }
 }
 
 
 void DualIRAudioProcessorEditor::loadIRClicked()
 {
-    FileChooser chooser("Select one or more .wav IR files to import",
-        {},
-        "*.wav");
-    
-    if (chooser.browseForMultipleFilesToOpen())
+    myChooser = std::make_unique<FileChooser> ("Select a folder to load IR's from",
+                                               File::getSpecialLocation (File::userDesktopDirectory),
+                                               "*.wav");
+ 
+    auto folderChooserFlags = FileBrowserComponent::openMode | FileBrowserComponent::canSelectDirectories;
+ 
+    myChooser->launchAsync (folderChooserFlags, [this] (const FileChooser& chooser)                
     {
-        int import_fail = 1;
-        Array<File> files = chooser.getResults();
-        for (auto file : files) {
-            File fullpath = processor.userAppDataDirectory_irs.getFullPathName() + "/" + file.getFileName();
-            bool b = fullpath.existsAsFile();
-            if (b == false) {
+        Array<File> files = chooser.getResult().findChildFiles(2, false, "*.wav");
+        
+        // Change the target IR folder
+        processor.userAppDataDirectory_irs = chooser.getResult();
+        processor.irFiles.clear();
+        processor.num_irs = 0;
 
-                //processor.loadIR(file);
-                //fname = file.getFileName();
-                //processor.loaded_ir = file;
-                //processor.loaded_ir_name = fname;
-                //processor.custom_ir = 1;
+        if (files.size() > 0) {
+            //Array<File> files = chooser.getResults();
+            for (auto file : files) {
 
-                // Copy selected file to model directory and load into dropdown menu
-                bool a = file.copyFileTo(fullpath);
-                if (a == true) {
+                //File fullpath = processor.userAppDataDirectory_irs.getFullPathName() + "/" + file.getFileName();
+                //bool b = fullpath.existsAsFile();
+                //bool b = file.existsAsFile();
+
+                //if (b == false) {
+
+                    // Copy selected file to model directory and load into dropdown menu
+                    // bool a = file.copyFileTo(fullpath);
+                    // if (a == true) {
+
                     // Add to ir-a menu
-                    iraSelect.addItem(file.getFileNameWithoutExtension(), processor.irFiles.size() + 1);
-                    //iraSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
+                iraSelect.addItem(file.getFileNameWithoutExtension(), processor.irFiles.size() + 1);
 
-                    // Add to ir-b menu
-                    irbSelect.addItem(file.getFileNameWithoutExtension(), processor.irFiles.size() + 1);
-                    //irbSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
 
-                    processor.irFiles.push_back(file);
-                    processor.num_irs += 1;
-                }
+                // Add to ir-b menu
+                irbSelect.addItem(file.getFileNameWithoutExtension(), processor.irFiles.size() + 1);
+
+                processor.irFiles.push_back(file);
+                processor.num_irs += 1;
+
+                //}
                 // Sort jsonFiles alphabetically
                 //std::sort(processor.irFiles.begin(), processor.irFiles.end());
+            //}
             }
+            // Load last file in selected files list for both A and B IR's
+            iraSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
+            irbSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
+            processor.loadIRa(files.getLast());
+            processor.loadIRb(files.getLast());
         }
-    }
+    });
     
 }
 
@@ -301,17 +364,10 @@ void DualIRAudioProcessorEditor::sliderValueChanged(Slider* slider)
         processor.setMaster(slider->getValue());
     else if (slider == &ampBalanceKnob)
         processor.setBalance(slider->getValue());
-    /*
-    if (slider == &modelKnob) {
-        if (slider->getValue() >= 0 && slider->getValue() < processor.jsonFiles.size()) {
-            modelSelect.setSelectedItemIndex(processor.getModelIndex(slider->getValue()), juce::NotificationType::dontSendNotification);
-        }
-    } else if (slider == &irKnob) {
-        if (slider->getValue() >= 0 && slider->getValue() < processor.irFiles.size()) {
-            irSelect.setSelectedItemIndex(processor.getIrIndex(slider->getValue()), juce::NotificationType::dontSendNotification);
-        }
-    }
-    */
+    else if (slider == &ampPanAKnob)
+        processor.setPanA(slider->getValue());
+    else if (slider == &ampPanBKnob)
+        processor.setPanB(slider->getValue());
 }
 
 

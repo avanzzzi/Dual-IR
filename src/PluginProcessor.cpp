@@ -23,28 +23,16 @@ DualIRAudioProcessor::DualIRAudioProcessor()
 #endif
         .withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
-    )
-
+    ),
+    treeState(*this, nullptr, "PARAMETER", { std::make_unique<AudioParameterFloat>(GAIN_ID, GAIN_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f),
+                        std::make_unique<AudioParameterFloat>(MASTER_ID, MASTER_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5),
+                        std::make_unique<AudioParameterFloat>(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f),
+                        std::make_unique<AudioParameterFloat>(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f),
+                        std::make_unique<AudioParameterFloat>(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f) })
 #endif
 {
-    setupDataDirectories();
-
-    resetDirectoryIR(userAppDataDirectory_irs);
-    // Sort iraFiles alphabetically
-    std::sort(irFiles.begin(), irFiles.end());
-    if (irFiles.size() > 0) {
-        loadIRa(irFiles[current_ira_index]);
-        loadIRb(irFiles[current_irb_index]);
-    }
 
 
-
-    // initialize parameters:
-    addParameter(gainParam = new AudioParameterFloat(GAIN_ID, GAIN_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    addParameter(masterParam = new AudioParameterFloat(MASTER_ID, MASTER_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    //addParameter(bassParam = new AudioParameterFloat(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    //addParameter(midParam = new AudioParameterFloat(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    addParameter(balanceParam = new AudioParameterFloat(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
 }
 
 
@@ -172,55 +160,124 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
     auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
 
+    auto buffer_temp = AudioBuffer<float>(2, numSamples);
+    auto block_temp0 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(0);
+    auto block_temp1 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(1);
+
     // Amp =============================================================================
     if (amp_state == 1) {
 
-        buffer.applyGain(driveValue * 2.0);
+        // Apply ramped changes for gain smoothing
+        if (driveValue == previousDriveValue)
+        {
+            buffer.applyGain(driveValue * 2.0);
+        }
+        else {
+            buffer.applyGainRamp(0, (int) buffer.getNumSamples(), previousDriveValue * 2.0, driveValue * 2.0);
+            previousDriveValue = driveValue;
+        }
 
-        // Process IR-A
-        if (ira_state == true && irb_state == false && num_irs > 0) {
+        if (isStereo == false) {
+            // Process IR-A only
+            if (ira_state == true && irb_state == false && num_irs > 0) {
         
-            cabSimIRa.process(context); // Process IR on channel 0
+                cabSimIRa.process(context); // Process IR on channel 0
 
-            // IR generally makes output quieter, add volume here to make ir on/off volume more even
-            buffer.applyGain(2.0);
+                // IR generally makes output quieter, add volume here to make ir on/off volume more even
+                buffer.applyGain(2.0);
+
+            // Process both IR-A and IR-B
+            } else if (irb_state == true && ira_state == true && num_irs > 0) {
+
+                // Process IR-A and IR-B on Channel 0, Channel 1 respectively
+                cabSimIRa.process(context); // Process IR on channel 0
+                cabSimIRb.process(context2); // Process IR on channel 1
+
+                // Apply Balance Parameter //
+                // This applies a balance to the mono output from both IR's.
+                // For example, if Balance = 0.3 (from a range 0.0 to 1.0),
+                //   then IR-A will share 30% of the mono output and 
+                //   IR-B will share 70% of the mono output. 
+            
+                // Apply the appropriate Balance to each channel for mono output
+                block.multiplyBy(1.0 - balanceValue); // TODO Verify that multiplyBy function acts like a Gain
+                block2.multiplyBy(balanceValue);
+
+                // Add channel 1 to channel 0 (channel 0 will be copied to channel 1 later on)
+                block.add(block2);
+
+            // Process IR-B only
+            } else if (ira_state == false && irb_state == true && num_irs > 0) {
+                cabSimIRb.process(context);
+                buffer.applyGain(2.0);
+            }
+
+            // Copy channel 0 to channel 1 for mono output
+            for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
+                buffer.copyFrom(ch, 0, buffer, 0, 0, buffer.getNumSamples());
+
+        } else { // PROCESS STEREO / PANNING Controls //////////////////////////////////////////////////////////////
+
+        // Process IR-A only
+            if (ira_state == true && irb_state == false && num_irs > 0) {
+            
+                cabSimIRa.process(context); // Process IR on channel 0
+
+                for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
+                    buffer.copyFrom(ch, 0, buffer, 0, 0, buffer.getNumSamples());
+
+                block.multiplyBy(1.0 - panAValue);
+                block2.multiplyBy(panAValue);
+
+                // IR generally makes output quieter, add volume here to make ir on/off volume more even
+                buffer.applyGain(2.0);
+
+            }  else if (irb_state == true && ira_state == true && num_irs > 0) {
+
+                // Process IR-A and IR-B on Channel 0, Channel 1 respectively
+                cabSimIRa.process(context); // Process IR on channel 0
+                cabSimIRb.process(context2); // Process IR on channel 1
+
+                // Copy original audio for channel 1 into temporary buffer
+                block_temp0.copyFrom(block);
+                block_temp1.copyFrom(block2);
+
+                // Apply panning to channel 1
+                block.multiplyBy(1.0 - panAValue);
+
+                // Apply panning to channel 2
+                block2.multiplyBy(panBValue);
+
+                // Add channel 2 pan to channel 1
+                block.add(block_temp1.multiplyBy(1.0 - panBValue));
+
+                // Add channel 1 pan to channel 2
+                block2.add(block_temp0.multiplyBy(panAValue));
+
+            // Process IR-B only
+            } else if (ira_state == false && irb_state == true && num_irs > 0) {
+                cabSimIRb.process(context); // Process IR on channel 0
+
+                for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
+                    buffer.copyFrom(ch, 0, buffer, 0, 0, buffer.getNumSamples());
+                block.multiplyBy(1.0 - panBValue);
+                block2.multiplyBy(panBValue);
+
+                buffer.applyGain(2.0);
+            }
         }
 
-        // Process IR-B
-        if (irb_state == true && ira_state == true && num_irs > 0) {
-
-            // Process IR-A and IR-B on Channel 0, Channel 1 respectively
-            cabSimIRa.process(context); // Process IR on channel 0
-            cabSimIRb.process(context2); // Process IR on channel 1
-
-
-            // Apply Balance Parameter //
-            // This applies a balance to the mono output from both IR's.
-            // For example, if Balance = 0.3 (from a range 0.0 to 1.0),
-            //   then IR-A will share 30% of the mono output and 
-            //   IR-B will share 70% of the mono output. 
-
-            // Apply the appropriate Balance to each channel
-            block.multiplyBy(1.0 - balanceValue); // TODO Verify that multiplyBy function acts like a Gain
-            block2.multiplyBy(balanceValue);
-
-            // Add channel 1 to channel 0 (channel 0 will be copied to channel 1 later on)
-            block.add(block2);
-
-
-        } else if (ira_state == false && irb_state == true && num_irs > 0) {
-            cabSimIRb.process(context);
-            buffer.applyGain(2.0);
+        // Master Volume 
+        // Apply ramped changes for gain smoothing
+        if (masterValue == previousMasterValue)
+        {
+            buffer.applyGain(masterValue * 2.0);
         }
-
-        //    Master Volume 
-	buffer.applyGain(masterValue * 2.0);
+        else {
+            buffer.applyGainRamp(0, (int) buffer.getNumSamples(), previousMasterValue * 2.0, masterValue * 2.0);
+            previousMasterValue = masterValue;
+        }
     }
-
-
-    // Copy Channel 0 to Channel 1 for Mono Output
-    for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
-        buffer.copyFrom(ch, 0, buffer, 0, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -240,12 +297,29 @@ void DualIRAudioProcessor::getStateInformation(MemoryBlock& destData)
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 
+    auto state = treeState.copyState();
+    std::unique_ptr<XmlElement> xml (state.createXml());
+    copyXmlToBinary (*xml, destData);
+
 }
 
 void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+    {
+        if (xmlState->hasTagName (treeState.state.getType()))
+        {
+            treeState.replaceState (juce::ValueTree::fromXml (*xmlState));
+            // TODO Add resetimages method
+            //if (auto* editor = dynamic_cast<DualIRAudioProcessorEditor*> (getActiveEditor()))
+            //    editor->resetImages();
+        }
+    }
 
 }
 
@@ -281,61 +355,6 @@ void DualIRAudioProcessor::loadIRb(File irFile)
 }
 
 
-void DualIRAudioProcessor::resetDirectoryIR(const File& file)
-{
-    irFiles.clear();
-    if (file.isDirectory())
-    {
-        juce::Array<juce::File> results;
-        file.findChildFiles(results, juce::File::findFiles, false, "*.wav");
-        for (int i = results.size(); --i >= 0;)
-            irFiles.push_back(File(results.getReference(i).getFullPathName()));
-    }
-}
-
-
-void DualIRAudioProcessor::addDirectoryIR(const File& file)
-{
-    if (file.isDirectory())
-    {
-        juce::Array<juce::File> results;
-        file.findChildFiles(results, juce::File::findFiles, false, "*.wav");
-        for (int i = results.size(); --i >= 0;)
-        {
-            irFiles.push_back(File(results.getReference(i).getFullPathName()));
-            num_irs = num_irs + 1.0;
-        }
-    }
-}
-
-void DualIRAudioProcessor::setupDataDirectories()
-{
-    // User app data directory
-    File userAppDataTempFile = userAppDataDirectory.getChildFile("tmp.pdl");
-
-    File userAppDataTempFile_irs = userAppDataDirectory_irs.getChildFile("tmp.pdl");
-
-    // Create (and delete) temp file if necessary, so that user doesn't have
-    // to manually create directories
-    if (!userAppDataDirectory.exists()) {
-        userAppDataTempFile.create();
-    }
-    if (userAppDataTempFile.existsAsFile()) {
-        userAppDataTempFile.deleteFile();
-    }
-
-
-    if (!userAppDataDirectory_irs.exists()) {
-        userAppDataTempFile_irs.create();
-    }
-    if (userAppDataTempFile_irs.existsAsFile()) {
-        userAppDataTempFile_irs.deleteFile();
-    }
-
-    // Add the tones directory and update IR list
-    addDirectoryIR(userAppDataDirectory_irs);
-}
-
 void DualIRAudioProcessor::setDrive(float paramDrive)
 {
     driveValue = paramDrive;
@@ -352,22 +371,15 @@ void DualIRAudioProcessor::setBalance(float paramBalance)
     balanceValue = paramBalance;
 }
 
-
-/*
-float DualIRAudioProcessor::convertLogScale(float in_value, float x_min, float x_max, float y_min, float y_max)
+void DualIRAudioProcessor::setPanA(float paramPanA)
 {
-    float b = log(y_max / y_min) / (x_max - x_min);
-    float a = y_max / exp(b * x_max);
-    float converted_value = a * exp(b * in_value);
-    return converted_value;
+    panAValue = paramPanA;
 }
 
-
-float DualIRAudioProcessor::decibelToLinear(float dbValue)
+void DualIRAudioProcessor::setPanB(float paramPanB)
 {
-    return powf(10.0, dbValue/20.0);
+    panBValue = paramPanB;
 }
-*/
 
 //==============================================================================
 // This creates new instances of the plugin..
