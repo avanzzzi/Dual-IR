@@ -45,7 +45,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbSelect.setScrollWheelEnabled(true);
 
     addAndMakeVisible(loadIR);
-    loadIR.setButtonText("Import IR");
+    loadIR.setButtonText("Load IRs");
     loadIR.setColour(juce::Label::textColourId, juce::Colours::black);
     loadIR.addListener(this);
 
@@ -237,7 +237,7 @@ void DualIRAudioProcessorEditor::resized()
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
     stereoLabel.setBounds(280, 80, 60, 10);
-    versionLabel.setBounds(280, 210, 80, 10);
+    versionLabel.setBounds(400, 215, 80, 10);
 }
 
 void DualIRAudioProcessorEditor::iraSelectChanged()
@@ -301,12 +301,19 @@ void DualIRAudioProcessorEditor::loadIRClicked()
  
     myChooser->launchAsync (folderChooserFlags, [this] (const FileChooser& chooser)                
     {
-        Array<File> files = chooser.getResult().findChildFiles(2, false, "*.wav");
+        Array<File> files;
+        if (chooser.getResult().existsAsFile()) { // If a file is selected
+            files = chooser.getResult().getParentDirectory().findChildFiles(2, false, "*.wav");
+        } else if (chooser.getResult().isDirectory()){ // Else folder is selected
+            files = chooser.getResult().findChildFiles(2, false, "*.wav");
+        }
         
         // Change the target IR folder
         processor.userAppDataDirectory_irs = chooser.getResult();
         processor.irFiles.clear();
         processor.num_irs = 0;
+        iraSelect.clear();
+        irbSelect.clear();
 
         if (files.size() > 0) {
             //Array<File> files = chooser.getResults();
@@ -340,8 +347,12 @@ void DualIRAudioProcessorEditor::loadIRClicked()
             // Load last file in selected files list for both A and B IR's
             iraSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
             irbSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
-            processor.loadIRa(files.getLast());
-            processor.loadIRb(files.getLast());
+            //processor.loadIRa(files.getLast());
+            //processor.loadIRb(files.getLast());
+            iraSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
+            irbSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
+            iraSelectChanged();
+            irbSelectChanged();
         }
     });
     
