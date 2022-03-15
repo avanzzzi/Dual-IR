@@ -33,7 +33,7 @@ wait
 # copy builds to bin
 mkdir -p bin/Win64
 mkdir -p bin/Win32
-declare -a plugins=("NeuralPi")
+declare -a plugins=("Dual-IR")
 for plugin in "${plugins[@]}"; do
     cp -R build/${plugin}_artefacts/Release/Standalone/${plugin}.exe bin/Win64/${plugin}.exe
     cp -R build/${plugin}_artefacts/Release/VST3/${plugin}.vst3 bin/Win64/${plugin}.vst3
