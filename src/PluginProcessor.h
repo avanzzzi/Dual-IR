@@ -109,7 +109,7 @@ public:
     int numChannels = 1;
     float panAValue= 0.0;
     float panBValue = 1.0;
-    bool isDualMono = true;
+    bool isStereoIn = false;
 
     AudioProcessorValueTreeState treeState;
 
