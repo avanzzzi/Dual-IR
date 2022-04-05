@@ -299,6 +299,9 @@ void DualIRAudioProcessor::getStateInformation(MemoryBlock& destData)
 
     auto state = treeState.copyState();
     std::unique_ptr<XmlElement> xml (state.createXml());
+    xml->setAttribute ("ira_state", ira_state);
+    xml->setAttribute ("irb_state", irb_state);
+    xml->setAttribute ("isStereo", isStereo);
     copyXmlToBinary (*xml, destData);
 
 }
@@ -315,12 +318,11 @@ void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes
         if (xmlState->hasTagName (treeState.state.getType()))
         {
             treeState.replaceState (juce::ValueTree::fromXml (*xmlState));
-            // TODO Add resetimages method
-            //if (auto* editor = dynamic_cast<DualIRAudioProcessorEditor*> (getActiveEditor()))
-            //    editor->resetImages();
+	          ira_state = xmlState->getBoolAttribute ("ira_state");
+            irb_state = xmlState->getBoolAttribute ("irb_state");
+	          isStereo = xmlState->getBoolAttribute ("isStereo");
         }
     }
-
 }
 
 void DualIRAudioProcessor::loadIRa(File irFile)
