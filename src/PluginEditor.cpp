@@ -300,14 +300,17 @@ void DualIRAudioProcessorEditor::modeSelectChanged()
         ampBalanceKnob.setEnabled(true);
   
     else if (modeIndex == 1)
-        processor.isStereoIn = true;
-        processor.isStereo = false;
-        ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
-        ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
-        ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
-        ampPanAKnob.setEnabled(false);
-        ampPanBKnob.setEnabled(false);
-        ampBalanceKnob.setEnabled(true);
+        if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
+            modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
+        } else {
+            processor.isStereoIn = true;
+            processor.isStereo = false;
+            ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
+            ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
+            ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
+            ampPanAKnob.setEnabled(false);
+            ampPanBKnob.setEnabled(false);
+            ampBalanceKnob.setEnabled(true);
   
     else if (modeIndex == 2)
         if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
