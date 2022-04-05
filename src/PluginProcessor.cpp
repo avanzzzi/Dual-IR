@@ -332,9 +332,9 @@ void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes
         if (xmlState->hasTagName (treeState.state.getType()))
         {
             treeState.replaceState (juce::ValueTree::fromXml (*xmlState));
-	          ira_state = xmlState->getBoolAttribute ("ira_state");
+	    ira_state = xmlState->getBoolAttribute ("ira_state");
             irb_state = xmlState->getBoolAttribute ("irb_state");
-	          isStereo = xmlState->getBoolAttribute ("isStereo");
+	    isStereo = xmlState->getBoolAttribute ("isStereo");
         }
     }
 }
