@@ -59,6 +59,7 @@ private:
     Label iraDropDownLabel;
     Label irbDropDownLabel;
     Label stereoLabel;
+    Label dualMonoLabel;
     Label versionLabel;
 
     File test_file;
@@ -67,6 +68,7 @@ private:
     ToggleButton iraButton;
     ToggleButton irbButton;
     ToggleButton stereoButton;
+    ToggleButton dualMonoButton;
 
     juce::LookAndFeel_V4 blueLookAndFeel;
     juce::LookAndFeel_V4 greyLookAndFeel;
