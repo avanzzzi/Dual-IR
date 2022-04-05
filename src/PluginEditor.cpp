@@ -68,9 +68,9 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     stereoButton.onClick = [this] { updateToggleState(&stereoButton, "Stereo");   };
   
     // Toggle Dual Mono
-    addAndMakeVisible(dualMonoButton); // Toggle is for testing purposes
-    dualMonoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-    dualMonoButton.onClick = [this] { updateToggleState(&dualMonoButton, "DualMono");   };
+    addAndMakeVisible(stereoInButton); // Toggle is for testing purposes
+    stereoInButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    stereoInButton.onClick = [this] { updateToggleState(&stereoInButton, "StereoIn");   };
       
     addAndMakeVisible(ampGainKnob);
     ampGainKnob.setLookAndFeel(&blueLookAndFeel);
@@ -173,9 +173,9 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     stereoLabel.setText("Stereo Out", juce::NotificationType::dontSendNotification);
     stereoLabel.setJustificationType(juce::Justification::centred);
       
-    addAndMakeVisible(dualMonoLabel);
-    stereoLabel.setText("Stereo In", juce::NotificationType::dontSendNotification);
-    stereoLabel.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(stereoInLabel);
+    stereoInLabel.setText("Stereo In", juce::NotificationType::dontSendNotification);
+    stereoInLabel.setJustificationType(juce::Justification::centred);
 
     addAndMakeVisible(versionLabel);
     versionLabel.setText("v1.0.0", juce::NotificationType::dontSendNotification);
@@ -231,7 +231,7 @@ void DualIRAudioProcessorEditor::resized()
     iraButton.setBounds(335, 8, 30, 30);
     irbButton.setBounds(335, 40, 30, 30);
     stereoButton.setBounds(335, 71, 30, 30);
-    dualMonoButton.setBounds(335, 85, 30, 30);
+    stereoInButton.setBounds(335, 85, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -251,7 +251,7 @@ void DualIRAudioProcessorEditor::resized()
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
     stereoLabel.setBounds(280, 80, 60, 10);
-    dualMonoLabel.setBounds(280, 95, 60, 10);
+    stereoInLabel.setBounds(280, 95, 60, 10);
     versionLabel.setBounds(400, 215, 80, 10);
 }
 
@@ -293,11 +293,11 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
         else {
             processor.irb_state = true;
         }
-    else if (name == "DualMono")
-        if (processor.isDualMono == true) {
-            processor.isDualMono = false;
+    else if (name == "StereoIn")
+        if (processor.isStereoIn == true) {
+            processor.isStereoIn = false;
         } else {
-            processor.isDualMono = true;
+            processor.isStereoIn = true;
         }
     else if (name == "Stereo")
         if (processor.isStereo == true) {
