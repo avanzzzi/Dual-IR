@@ -69,7 +69,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
   
     // Toggle Dual Mono
     addAndMakeVisible(dualMonoButton); // Toggle is for testing purposes
-    dualMonoButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+    dualMonoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
     dualMonoButton.onClick = [this] { updateToggleState(&dualMonoButton, "DualMono");   };
       
     addAndMakeVisible(ampGainKnob);
