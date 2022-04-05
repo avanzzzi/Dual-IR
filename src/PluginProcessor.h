@@ -111,6 +111,7 @@ public:
 
     // Stereo and Pan params
     bool isStereo = false;
+    bool isStereo_override = false;
     float panAValue= 0.0;
     float panBValue = 1.0;
 
