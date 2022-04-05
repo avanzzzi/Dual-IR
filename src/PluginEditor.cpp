@@ -49,9 +49,9 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
       
     addAndMakeVisible(modeSelect);
     modeSelect.setColour(juce::Label::textColourId, juce::Colours::black);
-    modeSelect.addItem("Mono", 0);
-    modeSelect.addItem("Dual Mono", 1);
-    modeSelect.addItem("Stereo", 2);      
+    modeSelect.addItem("Mono", 1);
+    modeSelect.addItem("Dual Mono", 2);
+    modeSelect.addItem("Stereo", 3);      
     modeSelect.onChange = [this] {modeSelectChanged(); };
     modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
     modeSelect.setScrollWheelEnabled(true);
@@ -72,14 +72,14 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbButton.onClick = [this] { updateToggleState(&irbButton, "IRB");   };
 
     // Toggle Stereo
-    addAndMakeVisible(stereoButton); // Toggle is for testing purposes
-    stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-    stereoButton.onClick = [this] { updateToggleState(&stereoButton, "Stereo");   };
+    //addAndMakeVisible(stereoButton); // Toggle is for testing purposes
+    //stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    //stereoButton.onClick = [this] { updateToggleState(&stereoButton, "Stereo");   };
   
     // Toggle Dual Mono
-    addAndMakeVisible(stereoInButton); // Toggle is for testing purposes
-    stereoInButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-    stereoInButton.onClick = [this] { updateToggleState(&stereoInButton, "StereoIn");   };
+    //addAndMakeVisible(stereoInButton); // Toggle is for testing purposes
+    //stereoInButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    //stereoInButton.onClick = [this] { updateToggleState(&stereoInButton, "StereoIn");   };
       
     addAndMakeVisible(ampGainKnob);
     ampGainKnob.setLookAndFeel(&blueLookAndFeel);
@@ -240,7 +240,6 @@ void DualIRAudioProcessorEditor::resized()
     iraButton.setBounds(335, 8, 30, 30);
     irbButton.setBounds(335, 40, 30, 30);
     modeSelect.setBounds(335, 71, 75, 30);
-    //stereoInButton.setBounds(335, 85, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -260,7 +259,6 @@ void DualIRAudioProcessorEditor::resized()
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
     modeLabel.setBounds(280, 80, 60, 10);
-    //stereoInLabel.setBounds(280, 95, 60, 10);
     versionLabel.setBounds(400, 215, 80, 10);
 }
 
@@ -269,7 +267,6 @@ void DualIRAudioProcessorEditor::iraSelectChanged()
     const int selectedFileIndex = iraSelect.getSelectedItemIndex();
     if (selectedFileIndex >= 0 && selectedFileIndex < processor.irFiles.size()) {
         File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + iraSelect.getText() + ".wav";
-        //processor.loadConfig(processor.irFiles[selectedFileIndex]);
         processor.loadIRa(selectedFile);
         processor.current_ira_index = selectedFileIndex;
     }
@@ -280,7 +277,6 @@ void DualIRAudioProcessorEditor::irbSelectChanged()
     const int selectedFileIndex = irbSelect.getSelectedItemIndex();
     if (selectedFileIndex >= 0 && selectedFileIndex < processor.irFiles.size()) {
         File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + irbSelect.getText() + ".wav";
-        //processor.loadIR(processor.irFiles[selectedFileIndex]);
         processor.loadIRb(selectedFile);
         processor.current_irb_index = selectedFileIndex;
     }
@@ -288,6 +284,7 @@ void DualIRAudioProcessorEditor::irbSelectChanged()
 
 void DualIRAudioProcessorEditor::modeSelectChanged()
 {
+
     const int modeIndex = modeSelect.getSelectedItemIndex();
     if (modeIndex == 0) {
         processor.isStereoIn = false;
@@ -311,7 +308,7 @@ void DualIRAudioProcessorEditor::modeSelectChanged()
             ampPanAKnob.setEnabled(false);
             ampPanBKnob.setEnabled(false);
             ampBalanceKnob.setEnabled(true);
-  
+        }
     } else if (modeIndex == 2) {
         if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
             modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
@@ -326,6 +323,7 @@ void DualIRAudioProcessorEditor::modeSelectChanged()
             ampPanBKnob.setEnabled(true);
             ampBalanceKnob.setEnabled(false);
         }
+
     }
 }
 
