@@ -29,10 +29,10 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # declare -a plugins=()
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     pluginval=$(install_pluginval_mac)
-    declare -a plugins=("build/NeuralPi_artefacts/VST3/Dual-IR.vst3")
+    declare -a plugins=("build/Dual-IR_artefacts/VST3/Dual-IR.vst3")
 else
     pluginval=$(install_pluginval_win)
-    declare -a plugins=("build/NeuralPi_artefacts/Release/VST3/Dual-IR.vst3")
+    declare -a plugins=("build/Dual-IR_artefacts/Release/VST3/Dual-IR.vst3")
 fi
 
 echo "Pluginval installed at ${pluginval}"
