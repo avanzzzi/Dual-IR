@@ -59,8 +59,8 @@ private:
 
     Label iraDropDownLabel;
     Label irbDropDownLabel;
-    Label stereoLabel;
-    Label stereoInLabel;
+    Label modeLabel;
+    //Label stereoInLabel;
     Label versionLabel;
 
     File test_file;
@@ -68,8 +68,8 @@ private:
     TextButton loadIR;
     ToggleButton iraButton;
     ToggleButton irbButton;
-    ToggleButton stereoButton;
-    ToggleButton stereoInButton;
+    //ToggleButton stereoButton;
+    //ToggleButton stereoInButton;
 
     juce::LookAndFeel_V4 blueLookAndFeel;
     juce::LookAndFeel_V4 greyLookAndFeel;
@@ -79,6 +79,7 @@ private:
     void updateToggleState(juce::Button* button, juce::String name);
     void iraSelectChanged();
     void irbSelectChanged();
+    void modeSelectChanged();
     void loadIRClicked();
     virtual void sliderValueChanged(Slider* slider) override;
 
