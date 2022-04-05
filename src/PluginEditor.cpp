@@ -67,6 +67,11 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
     stereoButton.onClick = [this] { updateToggleState(&stereoButton, "Stereo");   };
   
+    // Toggle Dual Mono
+    addAndMakeVisible(dualMonoButton); // Toggle is for testing purposes
+    dualMonoButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+    dualMonoButton.onClick = [this] { updateToggleState(&dualMonoButton, "DualMono");   };
+      
     addAndMakeVisible(ampGainKnob);
     ampGainKnob.setLookAndFeel(&blueLookAndFeel);
     ampGainKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -184,6 +189,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     BalanceLabelA.setFont(font);
     BalanceLabelB.setFont(font);
     stereoLabel.setFont(font);
+    dualMonoLabel.setFont(font);
 
     iraDropDownLabel.setFont(font);
     irbDropDownLabel.setFont(font);
@@ -221,6 +227,7 @@ void DualIRAudioProcessorEditor::resized()
     iraButton.setBounds(335, 8, 30, 30);
     irbButton.setBounds(335, 40, 30, 30);
     stereoButton.setBounds(335, 71, 30, 30);
+    dualMonoButton.setBounds(335, 85, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -240,6 +247,7 @@ void DualIRAudioProcessorEditor::resized()
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
     stereoLabel.setBounds(280, 80, 60, 10);
+    dualMonoLabel.setBounds(280, 95, 60, 10);
     versionLabel.setBounds(400, 215, 80, 10);
 }
 
@@ -268,7 +276,6 @@ void DualIRAudioProcessorEditor::irbSelectChanged()
 void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::String name)
 {
     if (name == "IRA")
-        //processor.ira_state = button->getToggleState();
         if (processor.ira_state == true) {
             processor.ira_state = false;
         } else {
@@ -276,12 +283,17 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
         }
 
     else if (name == "IRB")
-        //processor.irb_state = button->getToggleState();
         if (processor.irb_state == true) {
             processor.irb_state = false;
         }
         else {
             processor.irb_state = true;
+        }
+    else if (name == "DualMono")
+        if (processor.isDualMono == true) {
+            processor.isDualMono = false;
+        } else {
+            processor.isDualMono = true;
         }
     else if (name == "Stereo")
         if (processor.isStereo == true) {
