@@ -12,7 +12,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-//#include "myLookAndFeel.h"
 #include <stdlib.h>
 
 //==============================================================================
@@ -69,6 +68,8 @@ private:
     ToggleButton irbButton;
     ToggleButton stereoButton;
 
+    juce::LookAndFeel_V4 blueLookAndFeel;
+    juce::LookAndFeel_V4 greyLookAndFeel;
     
     juce::String fname;
     virtual void buttonClicked(Button* button) override;
