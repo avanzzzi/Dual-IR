@@ -225,7 +225,10 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 
         } else { // PROCESS STEREO / PANNING Controls //////////////////////////////////////////////////////////////
 
-        // Process IR-A only
+	    auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
+            auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
+            
+            // Process IR-A only
             if (ira_state == true && irb_state == false && num_irs > 0) {
             
                 cabSimIRa.process(context); // Process IR on channel 0
@@ -240,9 +243,6 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
                 buffer.applyGain(2.0);
 
             }  else if (irb_state == true && ira_state == true && num_irs > 0) {
-		    
-                auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
-                auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
 		 
 		// Create temporary buffers for processing    
                 auto buffer_temp = AudioBuffer<float>(2, numSamples);
