@@ -46,6 +46,15 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbSelect.onChange = [this] {irbSelectChanged(); };
     irbSelect.setSelectedItemIndex(processor.current_irb_index, juce::NotificationType::dontSendNotification);
     irbSelect.setScrollWheelEnabled(true);
+      
+    addAndMakeVisible(modeSelect);
+    modeSelect.setColour(juce::Label::textColourId, juce::Colours::black);
+    modeSelect.addItem("Mono", 0);
+    modeSelect.addItem("Dual Mono", 1);
+    modeSelect.addItem("Stereo", 2);      
+    modeSelect.onChange = [this] {modeSelectChanged(); };
+    modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
+    modeSelect.setScrollWheelEnabled(true);
 
     addAndMakeVisible(loadIR);
     loadIR.setButtonText("Load IRs");
@@ -169,13 +178,13 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbDropDownLabel.setText("IR-B", juce::NotificationType::dontSendNotification);
     irbDropDownLabel.setJustificationType(juce::Justification::centred);
 
-    addAndMakeVisible(stereoLabel);
-    stereoLabel.setText("Stereo Out", juce::NotificationType::dontSendNotification);
-    stereoLabel.setJustificationType(juce::Justification::centred);
+    addAndMakeVisible(modeLabel);
+    modeLabel.setText("Mode", juce::NotificationType::dontSendNotification);
+    modeLabel.setJustificationType(juce::Justification::centred);
       
-    addAndMakeVisible(stereoInLabel);
-    stereoInLabel.setText("Stereo In", juce::NotificationType::dontSendNotification);
-    stereoInLabel.setJustificationType(juce::Justification::centred);
+    //addAndMakeVisible(stereoInLabel);
+    //stereoInLabel.setText("Stereo In", juce::NotificationType::dontSendNotification);
+    //stereoInLabel.setJustificationType(juce::Justification::centred);
 
     addAndMakeVisible(versionLabel);
     versionLabel.setText("v1.0.0", juce::NotificationType::dontSendNotification);
@@ -192,8 +201,8 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     PanBLabel.setFont(font);
     BalanceLabelA.setFont(font);
     BalanceLabelB.setFont(font);
-    stereoLabel.setFont(font);
-    dualMonoLabel.setFont(font);
+    modeLabel.setFont(font);
+    //dualMonoLabel.setFont(font);
 
     iraDropDownLabel.setFont(font);
     irbDropDownLabel.setFont(font);
@@ -230,8 +239,8 @@ void DualIRAudioProcessorEditor::resized()
     loadIR.setBounds(11, 74, 100, 25);
     iraButton.setBounds(335, 8, 30, 30);
     irbButton.setBounds(335, 40, 30, 30);
-    stereoButton.setBounds(335, 71, 30, 30);
-    stereoInButton.setBounds(335, 85, 30, 30);
+    modeSelect.setBounds(335, 71, 75, 30);
+    //stereoInButton.setBounds(335, 85, 30, 30);
 
     // Amp Widgets
     ampGainKnob.setBounds(10, 120, 75, 95);
@@ -250,8 +259,8 @@ void DualIRAudioProcessorEditor::resized()
 
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
-    stereoLabel.setBounds(280, 80, 60, 10);
-    stereoInLabel.setBounds(280, 95, 60, 10);
+    modeLabel.setBounds(280, 80, 60, 10);
+    //stereoInLabel.setBounds(280, 95, 60, 10);
     versionLabel.setBounds(400, 215, 80, 10);
 }
 
@@ -277,6 +286,46 @@ void DualIRAudioProcessorEditor::irbSelectChanged()
     }
 }
 
+void DualIRAudioProcessorEditor::modeSelectChanged()
+{
+    const int modeIndex = modeSelect.getSelectedItemIndex();
+    if (modeIndex == 0)
+        processor.isStereoIn = false;
+        processor.isStereo = false;
+        ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
+        ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
+        ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
+        ampPanAKnob.setEnabled(false);
+        ampPanBKnob.setEnabled(false);
+        ampBalanceKnob.setEnabled(true);
+  
+    else if (modeIndex == 1)
+        processor.isStereoIn = true;
+        processor.isStereo = false;
+        ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
+        ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
+        ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
+        ampPanAKnob.setEnabled(false);
+        ampPanBKnob.setEnabled(false);
+        ampBalanceKnob.setEnabled(true);
+  
+    else if (modeIndex == 2)
+        if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
+            modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
+        } else {
+            processor.isStereoIn = true;
+            processor.isStereo = true;
+            ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
+            ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
+            ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
+
+            ampPanAKnob.setEnabled(true);
+            ampPanBKnob.setEnabled(true);
+            ampBalanceKnob.setEnabled(false);
+        }
+  
+}
+
 void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::String name)
 {
     if (name == "IRA")
@@ -292,36 +341,6 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
         }
         else {
             processor.irb_state = true;
-        }
-    else if (name == "StereoIn")
-        if (processor.isStereoIn == true) {
-            processor.isStereoIn = false;
-        } else {
-            processor.isStereoIn = true;
-        }
-    else if (name == "Stereo")
-        if (processor.isStereo == true) {
-            processor.isStereo = false;
-            ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
-            ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
-            ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
-
-            ampPanAKnob.setEnabled(false);
-            ampPanBKnob.setEnabled(false);
-            ampBalanceKnob.setEnabled(true);
-        } else {
-            if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
-                stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
-            } else {
-                processor.isStereo = true;
-                ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
-                ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
-                ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
-
-                ampPanAKnob.setEnabled(true);
-                ampPanBKnob.setEnabled(true);
-                ampBalanceKnob.setEnabled(false);
-            }
         }
 }
 
