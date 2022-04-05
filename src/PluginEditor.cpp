@@ -22,6 +22,9 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to
 
+    blueLookAndFeel.setColour(juce::Slider::thumbColourId, juce::Colours::aqua);
+    greyLookAndFeel.setColour(juce::Slider::thumbColourId, juce::Colours::grey);
+
     addAndMakeVisible(iraSelect);
     iraSelect.setColour(juce::Label::textColourId, juce::Colours::black);
     int c = 1;
@@ -65,7 +68,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     stereoButton.onClick = [this] { updateToggleState(&stereoButton, "Stereo");   };
   
     addAndMakeVisible(ampGainKnob);
-    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampGainKnob.setLookAndFeel(&blueLookAndFeel);
     ampGainKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampGainKnob.setNumDecimalPlacesToDisplay(1);
     ampGainKnob.addListener(this);
@@ -77,7 +80,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampGainKnob.setDoubleClickReturnValue(true, 0.5);
 
     addAndMakeVisible(ampMasterKnob);
-    //ampMasterKnob.setLookAndFeel(&blueLookAndFeel);
+    ampMasterKnob.setLookAndFeel(&blueLookAndFeel);
     ampMasterKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampMasterKnob.setNumDecimalPlacesToDisplay(1);
     ampMasterKnob.addListener(this);
@@ -86,12 +89,10 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampMasterKnob.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     ampMasterKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampMasterKnob.setNumDecimalPlacesToDisplay(2);
-    //ampMasterKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::NoTextBox, false, 50, 20 );
-    //ampMasterKnob.setNumDecimalPlacesToDisplay(1);
     ampMasterKnob.setDoubleClickReturnValue(true, 0.5);
 
     addAndMakeVisible(ampPanAKnob);
-    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
     ampPanAKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampPanAKnob.setNumDecimalPlacesToDisplay(1);
     ampPanAKnob.addListener(this);
@@ -101,9 +102,10 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampPanAKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampPanAKnob.setNumDecimalPlacesToDisplay(2);
     ampPanAKnob.setDoubleClickReturnValue(true, 0.0);
+    ampPanAKnob.setEnabled(false);
 
     addAndMakeVisible(ampPanBKnob);
-    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
     ampPanBKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampPanBKnob.setNumDecimalPlacesToDisplay(1);
     ampPanBKnob.addListener(this);
@@ -113,9 +115,10 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampPanBKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampPanBKnob.setNumDecimalPlacesToDisplay(2);
     ampPanBKnob.setDoubleClickReturnValue(true, 1.0);
+    ampPanBKnob.setEnabled(false);
 
     addAndMakeVisible(ampBalanceKnob);
-    //ampGainKnob.setLookAndFeel(&blueLookAndFeel);
+    ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
     ampBalanceKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
     ampBalanceKnob.setNumDecimalPlacesToDisplay(1);
     ampBalanceKnob.addListener(this);
@@ -283,10 +286,23 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
     else if (name == "Stereo")
         if (processor.isStereo == true) {
             processor.isStereo = false;
+            ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
+            ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
+            ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
 
+            ampPanAKnob.setEnabled(false);
+            ampPanBKnob.setEnabled(false);
+            ampBalanceKnob.setEnabled(true);
         }
         else {
             processor.isStereo = true;
+            ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
+            ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
+            ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
+
+            ampPanAKnob.setEnabled(true);
+            ampPanBKnob.setEnabled(true);
+            ampBalanceKnob.setEnabled(false);
         }
 }
 
@@ -380,5 +396,3 @@ void DualIRAudioProcessorEditor::sliderValueChanged(Slider* slider)
     else if (slider == &ampPanBKnob)
         processor.setPanB(slider->getValue());
 }
-
-
