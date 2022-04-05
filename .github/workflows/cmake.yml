@@ -50,23 +50,3 @@ jobs:
       if: runner.os == 'Windows'
       run: bash validate.sh
 
-    - name: Upload Linux Artifact GitHub Action
-      if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v2
-      with: 
-        name: linux-assets
-        path: /home/runner/work/Dual-IR/Dual-IR/build/Dual-IR_artefacts
-        
-    - name: Upload Mac Artifact GitHub Action
-      if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v2
-      with:
-        name: mac-assets
-        path: /Users/runner/work/Dual-IR/Dual-IR/build/Dual-IR_artefacts
-        
-    - name: Upload Windows Artifact GitHub Action
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
-      with:
-        name: win-assets
-        path: D:/a/Dual-IR/Dual-IR/build/Dual-IR_artefacts
