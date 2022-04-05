@@ -170,7 +170,11 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbDropDownLabel.setJustificationType(juce::Justification::centred);
 
     addAndMakeVisible(stereoLabel);
-    stereoLabel.setText("Stereo", juce::NotificationType::dontSendNotification);
+    stereoLabel.setText("Stereo Out", juce::NotificationType::dontSendNotification);
+    stereoLabel.setJustificationType(juce::Justification::centred);
+      
+    addAndMakeVisible(dualMonoLabel);
+    stereoLabel.setText("Stereo In", juce::NotificationType::dontSendNotification);
     stereoLabel.setJustificationType(juce::Justification::centred);
 
     addAndMakeVisible(versionLabel);
