@@ -44,6 +44,7 @@ private:
     Slider ampMasterKnob;
     ComboBox iraSelect;
     ComboBox irbSelect;
+    ComboBox modeSelect;
     Slider ampPanAKnob;
     Slider ampPanBKnob;
     Slider ampBalanceKnob;
