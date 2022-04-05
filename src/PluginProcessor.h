@@ -70,14 +70,8 @@ public:
 
     void loadIRa(File irFile);
     void loadIRb(File irFile);
-    //void setupDataDirectories();
 
-    //void addDirectoryIR(const File& file);
-    //void resetDirectoryIR(const File& file);
     std::vector<File> irFiles;
-    //File currentDirectory = File::getCurrentWorkingDirectory().getFullPathName();
-    //File userAppDataDirectory = File::getSpecialLocation(File::userDocumentsDirectory).getChildFile(JucePlugin_Manufacturer).getChildFile(JucePlugin_Name);
-    //File userAppDataDirectory_irs = userAppDataDirectory.getFullPathName() + "/irs";
     File userAppDataDirectory_irs = File::getSpecialLocation(File::userDesktopDirectory);
 
     // Pedal/amp states
