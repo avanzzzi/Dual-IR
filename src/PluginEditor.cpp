@@ -294,16 +294,22 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
             ampPanBKnob.setEnabled(false);
             ampBalanceKnob.setEnabled(true);
         }
-        else if (processor.numChannels > 1) { // Don't allow stereo processing if only 1 channel available to processor
-            processor.isStereo = true;
-            ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
-            ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
-            ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
+        else if (processor.isStereo == false) {
+            if (processor.numChannels < 2) { // Don't allow stereo processing if only 1 channel available to processor
+                stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+            } else {
+          
+                processor.isStereo = true;
+                ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
+                ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
+                ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
 
-            ampPanAKnob.setEnabled(true);
-            ampPanBKnob.setEnabled(true);
-            ampBalanceKnob.setEnabled(false);
+                ampPanAKnob.setEnabled(true);
+                ampPanBKnob.setEnabled(true);
+                ampBalanceKnob.setEnabled(false);
+            }
         }
+    }
 }
 
 
