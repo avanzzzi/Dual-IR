@@ -153,16 +153,18 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     const int numSamples = buffer.getNumSamples();
     const int numInputChannels = getTotalNumInputChannels();
     const int sampleRate = getSampleRate();
+	
+    // Override stereo checkbox to mono if only 1 channel available
+    if (numInputChannels < 2) {
+        isStereo_override = false;
+	numChannels = 1;
+    } else {
+        isStereo_override = isStereo;
+	numChannels = 2;
+    }
 
     auto block = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(0);
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
-
-    auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
-    auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
-
-    auto buffer_temp = AudioBuffer<float>(2, numSamples);
-    auto block_temp0 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(0);
-    auto block_temp1 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(1);
 
     // Amp =============================================================================
     if (amp_state == 1) {
@@ -177,7 +179,7 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
             previousDriveValue = driveValue;
         }
 
-        if (isStereo == false) {
+        if (isStereo_override == false) {
             // Process IR-A only
             if (ira_state == true && irb_state == false && num_irs > 0) {
         
@@ -188,10 +190,15 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 
             // Process both IR-A and IR-B
             } else if (irb_state == true && ira_state == true && num_irs > 0) {
+		    
+		// Create temporary buffer for processing    
+                auto buffer_temp = AudioBuffer<float>(1, numSamples);
+                auto block_temp0 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(0);
+		auto context_temp = juce::dsp::ProcessContextReplacing<float>(block_temp0);
 
                 // Process IR-A and IR-B on Channel 0, Channel 1 respectively
                 cabSimIRa.process(context); // Process IR on channel 0
-                cabSimIRb.process(context2); // Process IR on channel 1
+                cabSimIRb.process(context_temp); // Process IR on channel 0 data (temporary block)
 
                 // Apply Balance Parameter //
                 // This applies a balance to the mono output from both IR's.
@@ -200,11 +207,11 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
                 //   IR-B will share 70% of the mono output. 
             
                 // Apply the appropriate Balance to each channel for mono output
-                block.multiplyBy(1.0 - balanceValue); // TODO Verify that multiplyBy function acts like a Gain
-                block2.multiplyBy(balanceValue);
+                block.multiplyBy(1.0 - balanceValue);
+                block_temp0.multiplyBy(balanceValue);
 
                 // Add channel 1 to channel 0 (channel 0 will be copied to channel 1 later on)
-                block.add(block2);
+                block.add(block_temp0);
 
             // Process IR-B only
             } else if (ira_state == false && irb_state == true && num_irs > 0) {
@@ -233,6 +240,14 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
                 buffer.applyGain(2.0);
 
             }  else if (irb_state == true && ira_state == true && num_irs > 0) {
+		    
+                auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
+                auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
+		 
+		// Create temporary buffers for processing    
+                auto buffer_temp = AudioBuffer<float>(2, numSamples);
+                auto block_temp0 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(0);
+                auto block_temp1 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(1);
 
                 // Process IR-A and IR-B on Channel 0, Channel 1 respectively
                 cabSimIRa.process(context); // Process IR on channel 0
@@ -303,7 +318,6 @@ void DualIRAudioProcessor::getStateInformation(MemoryBlock& destData)
     xml->setAttribute ("irb_state", irb_state);
     xml->setAttribute ("isStereo", isStereo);
     copyXmlToBinary (*xml, destData);
-
 }
 
 void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
