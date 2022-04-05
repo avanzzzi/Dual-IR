@@ -294,7 +294,7 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
             ampPanBKnob.setEnabled(false);
             ampBalanceKnob.setEnabled(true);
         }
-        else {
+        else if (processor.numChannels > 1) { // Don't allow stereo processing if only 1 channel available to processor
             processor.isStereo = true;
             ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
             ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
@@ -332,39 +332,19 @@ void DualIRAudioProcessorEditor::loadIRClicked()
         irbSelect.clear();
 
         if (files.size() > 0) {
-            //Array<File> files = chooser.getResults();
             for (auto file : files) {
-
-                //File fullpath = processor.userAppDataDirectory_irs.getFullPathName() + "/" + file.getFileName();
-                //bool b = fullpath.existsAsFile();
-                //bool b = file.existsAsFile();
-
-                //if (b == false) {
-
-                    // Copy selected file to model directory and load into dropdown menu
-                    // bool a = file.copyFileTo(fullpath);
-                    // if (a == true) {
-
-                    // Add to ir-a menu
+                // Add to ir-a menu
                 iraSelect.addItem(file.getFileNameWithoutExtension(), processor.irFiles.size() + 1);
-
 
                 // Add to ir-b menu
                 irbSelect.addItem(file.getFileNameWithoutExtension(), processor.irFiles.size() + 1);
 
                 processor.irFiles.push_back(file);
                 processor.num_irs += 1;
-
-                //}
-                // Sort jsonFiles alphabetically
-                //std::sort(processor.irFiles.begin(), processor.irFiles.end());
-            //}
             }
             // Load last file in selected files list for both A and B IR's
             iraSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
             irbSelect.setSelectedItemIndex(processor.irFiles.size(), juce::NotificationType::dontSendNotification);
-            //processor.loadIRa(files.getLast());
-            //processor.loadIRb(files.getLast());
             iraSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
             irbSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
             iraSelectChanged();
