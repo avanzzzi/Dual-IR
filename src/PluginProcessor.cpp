@@ -166,8 +166,8 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     auto block = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(0);
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
 	
-    // Copy channel 0 to channel 1 for dual mono input 
-    if (isDualMono == true) {
+    // Copy channel 0 to channel 1 for mono instruments
+    if (isDualMono == false) {
         for (int ch = 1; ch < buffer.getNumChannels(); ++ch)
             buffer.copyFrom(ch, 0, buffer, 0, 0, buffer.getNumSamples());
     }
