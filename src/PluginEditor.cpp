@@ -293,12 +293,10 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
             ampPanAKnob.setEnabled(false);
             ampPanBKnob.setEnabled(false);
             ampBalanceKnob.setEnabled(true);
-        }
-        else if (processor.isStereo == false) {
-            if (processor.numChannels < 2) { // Don't allow stereo processing if only 1 channel available to processor
+        } else {
+            if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
                 stereoButton.setToggleState(false, juce::NotificationType::dontSendNotification);
             } else {
-          
                 processor.isStereo = true;
                 ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
                 ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
@@ -309,7 +307,6 @@ void DualIRAudioProcessorEditor::updateToggleState(juce::Button* button, juce::S
                 ampBalanceKnob.setEnabled(false);
             }
         }
-    }
 }
 
 
