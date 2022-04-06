@@ -122,8 +122,6 @@ private:
     AudioParameterFloat* panaParam;
     AudioParameterFloat* panbParam;
     AudioParameterFloat* balanceParam;
-    //AudioParameterFloat* modelParam;
-    //AudioParameterFloat* irParam;
 
     // IR processing
     CabSim cabSimIRa;
