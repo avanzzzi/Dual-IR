@@ -81,8 +81,6 @@ private:
     void loadIRClicked();
     virtual void sliderValueChanged(Slider* slider) override;
 
-    void resetMode();
-
     AudioProcessorParameter* getParameter(const String& paramId);
 
     float getParameterValue(const String& paramId);
