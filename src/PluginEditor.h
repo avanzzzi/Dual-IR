@@ -12,7 +12,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
-//#include "myLookAndFeel.h"
 #include <stdlib.h>
 
 //==============================================================================
@@ -43,12 +42,9 @@ private:
     // Amp Widgets
     Slider ampGainKnob;
     Slider ampMasterKnob;
-    //Slider modelKnob;
-    //Slider irKnob;
-    //ImageButton ampOnButton;
-    //ImageButton ampLED;
     ComboBox iraSelect;
     ComboBox irbSelect;
+    ComboBox modeSelect;
     Slider ampPanAKnob;
     Slider ampPanBKnob;
     Slider ampBalanceKnob;
@@ -63,7 +59,7 @@ private:
 
     Label iraDropDownLabel;
     Label irbDropDownLabel;
-    Label stereoLabel;
+    Label modeLabel;
     Label versionLabel;
 
     File test_file;
@@ -71,19 +67,20 @@ private:
     TextButton loadIR;
     ToggleButton iraButton;
     ToggleButton irbButton;
-    ToggleButton stereoButton;
 
+    juce::LookAndFeel_V4 blueLookAndFeel;
+    juce::LookAndFeel_V4 greyLookAndFeel;
     
     juce::String fname;
     virtual void buttonClicked(Button* button) override;
-    //void modelSelectChanged();
-    //void loadButtonClicked();
     void updateToggleState(juce::Button* button, juce::String name);
     void iraSelectChanged();
     void irbSelectChanged();
+    void modeSelectChanged();
     void loadIRClicked();
     virtual void sliderValueChanged(Slider* slider) override;
 
+    void resetMode();
 
     AudioProcessorParameter* getParameter(const String& paramId);
 
