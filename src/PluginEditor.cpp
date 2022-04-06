@@ -50,8 +50,8 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     addAndMakeVisible(modeSelect);
     modeSelect.setColour(juce::Label::textColourId, juce::Colours::black);
     modeSelect.addItem("Mono", 1);
-    modeSelect.addItem("Dual Mono", 2);
-    modeSelect.addItem("Stereo", 3);      
+    //modeSelect.addItem("Dual Mono", 2);
+    modeSelect.addItem("Stereo", 2);      
     modeSelect.onChange = [this] {modeSelectChanged(); };
     modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
     modeSelect.setScrollWheelEnabled(true);
@@ -266,8 +266,9 @@ void DualIRAudioProcessorEditor::iraSelectChanged()
 {
     const int selectedFileIndex = iraSelect.getSelectedItemIndex();
     if (selectedFileIndex >= 0 && selectedFileIndex < processor.irFiles.size()) {
-        File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + iraSelect.getText() + ".wav";
-        processor.loadIRa(selectedFile);
+        //File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + iraSelect.getText() + ".wav";
+        //processor.loadIRa(selectedFile);
+        processor.loadIRa(processor.irFiles[selectedFileIndex]);
         processor.current_ira_index = selectedFileIndex;
     }
 }
@@ -276,8 +277,9 @@ void DualIRAudioProcessorEditor::irbSelectChanged()
 {
     const int selectedFileIndex = irbSelect.getSelectedItemIndex();
     if (selectedFileIndex >= 0 && selectedFileIndex < processor.irFiles.size()) {
-        File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + irbSelect.getText() + ".wav";
-        processor.loadIRb(selectedFile);
+        //File selectedFile = processor.userAppDataDirectory_irs.getFullPathName() + "/" + irbSelect.getText() + ".wav";
+        //processor.loadIRb(selectedFile);
+        processor.loadIRb(processor.irFiles[selectedFileIndex]);
         processor.current_irb_index = selectedFileIndex;
     }
 }
@@ -295,34 +297,29 @@ void DualIRAudioProcessorEditor::modeSelectChanged()
         ampPanAKnob.setEnabled(false);
         ampPanBKnob.setEnabled(false);
         ampBalanceKnob.setEnabled(true);
-  
+     /*
     } else if (modeIndex == 1) {
-        if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
-            modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
-        } else {
-            processor.isStereoIn = true;
-            processor.isStereo = false;
-            ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
-            ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
-            ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
-            ampPanAKnob.setEnabled(false);
-            ampPanBKnob.setEnabled(false);
-            ampBalanceKnob.setEnabled(true);
-        }
-    } else if (modeIndex == 2) {
-        if ( processor.numChannels < 2 ) { // Don't allow stereo processing if only 1 channel available to processor
-            modeSelect.setSelectedItemIndex(0, juce::NotificationType::dontSendNotification);
-        } else {
-            processor.isStereoIn = false;
-            processor.isStereo = true;
-            ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
-            ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
-            ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
 
-            ampPanAKnob.setEnabled(true);
-            ampPanBKnob.setEnabled(true);
-            ampBalanceKnob.setEnabled(false);
-        }
+        processor.isStereoIn = true;
+        processor.isStereo = false;
+        ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
+        ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
+        ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
+        ampPanAKnob.setEnabled(false);
+        ampPanBKnob.setEnabled(false);
+        ampBalanceKnob.setEnabled(true);
+    */   
+    } else if (modeIndex == 1) {
+        processor.isStereoIn = false;
+        processor.isStereo = true;
+        ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
+        ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
+        ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
+
+        ampPanAKnob.setEnabled(true);
+        ampPanBKnob.setEnabled(true);
+        ampBalanceKnob.setEnabled(false);
+        
 
     }
 }
@@ -359,12 +356,13 @@ void DualIRAudioProcessorEditor::loadIRClicked()
         Array<File> files;
         if (chooser.getResult().existsAsFile()) { // If a file is selected
             files = chooser.getResult().getParentDirectory().findChildFiles(2, false, "*.wav");
+            processor.userAppDataDirectory_irs = chooser.getResult().getParentDirectory();
         } else if (chooser.getResult().isDirectory()){ // Else folder is selected
             files = chooser.getResult().findChildFiles(2, false, "*.wav");
+            processor.userAppDataDirectory_irs = chooser.getResult();
         }
         
         // Change the target IR folder
-        processor.userAppDataDirectory_irs = chooser.getResult();
         processor.irFiles.clear();
         processor.num_irs = 0;
         iraSelect.clear();
