@@ -113,6 +113,8 @@ public:
     bool isStereo = false;
     float panAValue= 0.0;
     float panBValue = 1.0;
+    
+    AudioProcessorValueTreeState treeState;
 
 private:
     var dummyVar;
