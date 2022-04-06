@@ -314,6 +314,7 @@ void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes
 
 void DualIRAudioProcessor::loadIRa(File irFile)
 {
+
     this->suspendProcessing(true);
 
     try {
