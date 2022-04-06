@@ -168,6 +168,8 @@ void DualIRAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     auto block2 = dsp::AudioBlock<float>(buffer).getSingleChannelBlock(1);
     auto context2 = juce::dsp::ProcessContextReplacing<float>(block2);
 
+    block2.copyFrom(block); // Copies channel 1 input to channel 2; This is more useful for guitar, which is mono input
+
     auto buffer_temp = AudioBuffer<float>(2, numSamples);
     auto block_temp0 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(0);
     auto block_temp1 = dsp::AudioBlock<float>(buffer_temp).getSingleChannelBlock(1);
