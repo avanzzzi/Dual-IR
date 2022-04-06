@@ -42,8 +42,8 @@ DualIRAudioProcessor::DualIRAudioProcessor()
     // initialize parameters:
     addParameter(gainParam = new AudioParameterFloat(GAIN_ID, GAIN_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
     addParameter(masterParam = new AudioParameterFloat(MASTER_ID, MASTER_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    //addParameter(bassParam = new AudioParameterFloat(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    //addParameter(midParam = new AudioParameterFloat(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
+    addParameter(panaParam = new AudioParameterFloat(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f));
+    addParameter(panbParam = new AudioParameterFloat(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f));
     addParameter(balanceParam = new AudioParameterFloat(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
 }
 
@@ -303,6 +303,12 @@ void DualIRAudioProcessor::getStateInformation(MemoryBlock& destData)
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 
+    auto state = treeState.copyState();
+    std::unique_ptr<XmlElement> xml (state.createXml());
+    xml->setAttribute ("ira_state", ira_state);
+    xml->setAttribute ("irb_state", irb_state);
+    xml->setAttribute ("isStereo", isStereo);
+    copyXmlToBinary (*xml, destData);
 }
 
 void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
@@ -310,6 +316,21 @@ void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 
+    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+
+    if (xmlState.get() != nullptr)
+    {
+        if (xmlState->hasTagName (treeState.state.getType()))
+        {
+            treeState.replaceState (juce::ValueTree::fromXml (*xmlState));
+	    ira_state = xmlState->getBoolAttribute ("ira_state");
+            irb_state = xmlState->getBoolAttribute ("irb_state");
+	    isStereo = xmlState->getBoolAttribute ("isStereo");
+
+            if (auto* editor = dynamic_cast<DualIRAudioProcessorEditor*> (getActiveEditor()))
+                editor->resetMode();
+        }
+    }
 }
 
 void DualIRAudioProcessor::loadIRa(File irFile)
@@ -426,21 +447,6 @@ void DualIRAudioProcessor::setPanB(float paramPanB)
     panBValue = paramPanB;
 }
 
-/*
-float DualIRAudioProcessor::convertLogScale(float in_value, float x_min, float x_max, float y_min, float y_max)
-{
-    float b = log(y_max / y_min) / (x_max - x_min);
-    float a = y_max / exp(b * x_max);
-    float converted_value = a * exp(b * in_value);
-    return converted_value;
-}
-
-
-float DualIRAudioProcessor::decibelToLinear(float dbValue)
-{
-    return powf(10.0, dbValue/20.0);
-}
-*/
 
 //==============================================================================
 // This creates new instances of the plugin..
