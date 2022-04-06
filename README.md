@@ -1,6 +1,6 @@
 # Dual-IR
 
-WORK IN PROGRESS - Currently using for IR testing
+WORK IN PROGRESS - Currently using for testing purposes only
 
 [![CI](https://github.com/GuitarML/Dual-IR/actions/workflows/cmake.yml/badge.svg)](https://github.com/GuitarML/Dual-IR/actions/workflows/cmake.yml) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-brightgreen.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Downloads](https://img.shields.io/github/downloads/GuitarML/Dual-IR/total)](https://somsubhra.github.io/github-release-stats/?username=GuitarML&repository=Dual-IR&page=1&per_page=30)
 
