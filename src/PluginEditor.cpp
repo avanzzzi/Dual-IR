@@ -222,8 +222,8 @@ void DualIRAudioProcessorEditor::resized()
     iraSelect.setBounds(11, 10, 270, 25);
     irbSelect.setBounds(11, 42, 270, 25);
     loadIR.setBounds(11, 74, 100, 25);
-    iraButton.setBounds(335, 8, 30, 30);
-    irbButton.setBounds(335, 40, 30, 30);
+    iraButton.setBounds(325, 8, 30, 30);
+    irbButton.setBounds(325, 40, 30, 30);
     modeSelect.setBounds(330, 71, 80, 30);
 
     // Amp Widgets
@@ -244,7 +244,7 @@ void DualIRAudioProcessorEditor::resized()
     iraDropDownLabel.setBounds(280, 16, 40, 10);
     irbDropDownLabel.setBounds(280, 48, 40, 10);
     modeLabel.setBounds(275, 80, 60, 10);
-    versionLabel.setBounds(280, 210, 80, 10);
+    versionLabel.setBounds(340, 8, 80, 10);
 
 }
 
