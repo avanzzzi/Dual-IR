@@ -23,7 +23,12 @@ DualIRAudioProcessor::DualIRAudioProcessor()
 #endif
         .withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
-    )
+    ),
+    treeState(*this, nullptr, "PARAMETER", { std::make_unique<AudioParameterFloat>(GAIN_ID, GAIN_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f),
+                        std::make_unique<AudioParameterFloat>(MASTER_ID, MASTER_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f),
+                        std::make_unique<AudioParameterFloat>(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f),
+                        std::make_unique<AudioParameterFloat>(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f),
+                        std::make_unique<AudioParameterFloat>(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f)})
 
 #endif
 {
@@ -36,15 +41,6 @@ DualIRAudioProcessor::DualIRAudioProcessor()
         loadIRa(irFiles[current_ira_index]);
         loadIRb(irFiles[current_irb_index]);
     }
-
-
-
-    // initialize parameters:
-    addParameter(gainParam = new AudioParameterFloat(GAIN_ID, GAIN_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    addParameter(masterParam = new AudioParameterFloat(MASTER_ID, MASTER_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
-    addParameter(panaParam = new AudioParameterFloat(PANA_ID, PANA_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.0f));
-    addParameter(panbParam = new AudioParameterFloat(PANB_ID, PANB_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 1.0f));
-    addParameter(balanceParam = new AudioParameterFloat(BALANCE_ID, BALANCE_NAME, NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
 }
 
 
