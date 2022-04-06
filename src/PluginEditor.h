@@ -31,7 +31,8 @@ public:
     void resized() override;
     std::unique_ptr<FileChooser> myChooser;
     
-
+    void resetMode();
+    
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
