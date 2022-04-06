@@ -187,7 +187,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     PanBLabel.setFont(font);
     BalanceLabelA.setFont(font);
     BalanceLabelB.setFont(font);
-    stereoLabel.setFont(font);
+    modeLabel.setFont(font);
 
     iraDropDownLabel.setFont(font);
     irbDropDownLabel.setFont(font);
