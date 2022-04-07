@@ -119,12 +119,6 @@ public:
 private:
     var dummyVar;
 
-    AudioParameterFloat* gainParam;
-    AudioParameterFloat* masterParam;
-    AudioParameterFloat* panaParam;
-    AudioParameterFloat* panbParam;
-    AudioParameterFloat* balanceParam;
-
     // IR processing
     CabSim cabSimIRa;
     CabSim cabSimIRb;
