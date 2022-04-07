@@ -374,15 +374,15 @@ void DualIRAudioProcessorEditor::resetMode()
     }
 
     if (processor.ira_state == false) {
-        iraButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-    } else {
         iraButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    } else {
+        iraButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     }
 
     if (processor.irb_state == false) {
-        irbButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-    } else {
         irbButton.setToggleState(false, juce::NotificationType::dontSendNotification);
+    } else {
+        irbButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     }
 }
 
