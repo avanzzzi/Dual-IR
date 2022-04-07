@@ -32,6 +32,7 @@ public:
     std::unique_ptr<FileChooser> myChooser;
     
     void resetMode();
+    void modeSelectChanged();
     
 private:
     // This reference is provided as a quick way for your editor to
@@ -77,14 +78,16 @@ private:
     void updateToggleState(juce::Button* button, juce::String name);
     void iraSelectChanged();
     void irbSelectChanged();
-    void modeSelectChanged();
+
     void loadIRClicked();
     virtual void sliderValueChanged(Slider* slider) override;
 
-    AudioProcessorParameter* getParameter(const String& paramId);
-
-    float getParameterValue(const String& paramId);
-    void setParameterValue(const String& paramId, float value);
+public:
+    std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> gainSliderAttach;
+    std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> masterSliderAttach;
+    std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> panaSliderAttach;
+    std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> panbSliderAttach;
+    std::unique_ptr <AudioProcessorValueTreeState::SliderAttachment> balanceSliderAttach;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DualIRAudioProcessorEditor)
 };

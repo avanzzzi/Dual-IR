@@ -327,6 +327,8 @@ void DualIRAudioProcessor::setStateInformation(const void* data, int sizeInBytes
 
             if (auto* editor = dynamic_cast<DualIRAudioProcessorEditor*> (getActiveEditor()))
                 editor->resetMode();
+            if (auto* editor = dynamic_cast<DualIRAudioProcessorEditor*> (getActiveEditor()))
+                editor->modeSelectChanged();
         }
     }
 }

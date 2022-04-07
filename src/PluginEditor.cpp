@@ -72,6 +72,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     irbButton.setToggleState(true, juce::NotificationType::dontSendNotification);
     irbButton.onClick = [this] { updateToggleState(&irbButton, "IRB");   };
 
+    gainSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState, GAIN_ID, ampGainKnob);
     addAndMakeVisible(ampGainKnob);
     ampGainKnob.setLookAndFeel(&blueLookAndFeel);
     ampGainKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -84,7 +85,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampGainKnob.setNumDecimalPlacesToDisplay(2);
     ampGainKnob.setDoubleClickReturnValue(true, 0.5);
 
-
+    masterSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState, MASTER_ID, ampMasterKnob);
     addAndMakeVisible(ampMasterKnob);
     ampMasterKnob.setLookAndFeel(&blueLookAndFeel);
     ampMasterKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -97,6 +98,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampMasterKnob.setNumDecimalPlacesToDisplay(2);
     ampMasterKnob.setDoubleClickReturnValue(true, 0.5);
 
+    panaSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState, PANA_ID, ampPanAKnob);
     addAndMakeVisible(ampPanAKnob);
     ampPanAKnob.setLookAndFeel(&greyLookAndFeel);
     ampPanAKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -110,6 +112,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampPanAKnob.setDoubleClickReturnValue(true, 0.5);
     ampPanBKnob.setEnabled(false);
 
+    panbSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState, PANB_ID, ampPanBKnob);
     addAndMakeVisible(ampPanBKnob);
     ampPanBKnob.setLookAndFeel(&greyLookAndFeel);
     ampPanBKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -123,6 +126,7 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
     ampPanBKnob.setDoubleClickReturnValue(true, 0.5);
     ampPanBKnob.setEnabled(false);
 
+    balanceSliderAttach = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(processor.treeState, BALANCE_ID, ampBalanceKnob);
     addAndMakeVisible(ampBalanceKnob);
     ampBalanceKnob.setLookAndFeel(&blueLookAndFeel);
     ampBalanceKnob.setTextBoxStyle(juce::Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 20);
@@ -195,10 +199,18 @@ DualIRAudioProcessorEditor::DualIRAudioProcessorEditor (DualIRAudioProcessor& p)
 
     // Size of plugin GUI
     setSize(420, 230);
+
+    resetMode();
+    modeSelectChanged();
 }
 
 DualIRAudioProcessorEditor::~DualIRAudioProcessorEditor()
 {
+    ampGainKnob.setLookAndFeel(nullptr);
+    ampBalanceKnob.setLookAndFeel(nullptr);
+    ampMasterKnob.setLookAndFeel(nullptr);
+    ampPanAKnob.setLookAndFeel(nullptr);
+    ampPanBKnob.setLookAndFeel(nullptr);
 }
 
 //==============================================================================
@@ -288,7 +300,6 @@ void DualIRAudioProcessorEditor::modeSelectChanged()
         ampBalanceKnob.setLookAndFeel(&greyLookAndFeel);
         ampPanAKnob.setLookAndFeel(&blueLookAndFeel);
         ampPanBKnob.setLookAndFeel(&blueLookAndFeel);
-
         ampPanAKnob.setEnabled(true);
         ampPanBKnob.setEnabled(true);
         ampBalanceKnob.setEnabled(false);
